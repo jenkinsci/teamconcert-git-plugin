@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2014 IBM Corporation and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+ 
+    Contributors:
+        IBM Corporation - initial API and implementation
+ -->
+ 
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+		<groupId>org.jenkins-ci.plugins</groupId>
+		<artifactId>plugin</artifactId>
+		<version>1.480.3</version>
+  </parent>
+  
+  <groupId>com.ibm.team.git.build.hjplugin</groupId>
+  <artifactId>teamconcert.git</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>hpi</packaging>
+  
+  <name>Team Concert Git Plugin</name>
+  <description>Integrates Jenkins with Rational Team Concert for Jenkins Builds which use Git as source control. This plugin will create tracebility links from a Jenkins build to RTC work items and build result.</description>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Team+Concert+Git+Plugin</url>
+  
+  <licenses>
+		<license>
+			<name>Eclipse Public License v1.0</name>
+			<comments>
+				/*******************************************************************************
+				 * Copyright (c) 2014 IBM Corporation and others.
+				 * All rights reserved. This program and the accompanying materials
+				 * are made available under the terms of the Eclipse Public License v1.0
+				 * which accompanies this distribution, and is available at
+				 * http://www.eclipse.org/legal/epl-v10.html
+				 *
+				 * Contributors:
+				 *     IBM Corporation - initial API and implementation
+				 *******************************************************************************/
+			</comments>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<id>clkkishore</id>
+			<name>Krishna Kishore</name>
+		</developer>
+	</developers>
+  
+  
+  <properties>
+		<tycho-version>0.19.0</tycho-version>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<project.build.outputEncoding>UTF-8</project.build.outputEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
+  <!-- get every artifact through maven.glassfish.org, which proxies all the artifacts that we need -->
+  <repositories>
+<!--   
+    <repository>
+      <id>m.g.o-public</id>
+      <url>http://maven.glassfish.org/content/groups/public/</url>
+    </repository>
+    -->
+    <repository>
+			<id>repo.jenkins-ci.org</id>
+			<url>http://repo.jenkins-ci.org/public/</url>
+	</repository>
+  </repositories>
+
+  <pluginRepositories>
+  <!-- 
+    <pluginRepository>
+      <id>m.g.o-public</id>
+      <url>http://maven.glassfish.org/content/groups/public/</url>
+    </pluginRepository>
+    -->
+    <pluginRepository>
+			<id>repo.jenkins-ci.org</id>
+			<url>http://repo.jenkins-ci.org/public/</url>
+		</pluginRepository>
+  </pluginRepositories>
+  
+  <dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.mockito</groupId>
+			<artifactId>mockito-all</artifactId>
+			<version>1.8.5</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>credentials</artifactId>
+			<version>1.16.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.3.3</version>
+		</dependency>
+		<dependency>
+  		<groupId>org.slf4j</groupId>
+  		<artifactId>slf4j-api</artifactId>
+  		<version>1.7.5</version>
+  	</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>ssh-credentials</artifactId>
+			<version>1.9</version>
+			<type>hpi</type>
+		</dependency>
+  </dependencies>
+	
+    <build>
+		<plugins>
+			<plugin>
+				<!-- enable tycho build extension -->
+				<groupId>org.eclipse.tycho</groupId>
+				<artifactId>tycho-maven-plugin</artifactId>
+				<version>${tycho-version}</version>
+				<extensions>true</extensions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<skipTests>false</skipTests>
+                     <includes>
+                       <include>**/*Tests.java</include>
+                     </includes>
+    			</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+		
+	</build>	
+  
+    <scm>
+    	<url>https://github.com/jenkinsci/teamconcert-git-plugin</url>
+    	<connection>scm:git:https://github.com/jenkinsci/teamconcert-git-plugin.git</connection>
+    	<developerConnection>scm:git:https://github.com/jenkinsci/teamconcert-git-plugin.git</developerConnection>
+    	<tag>HEAD</tag>
+    </scm>
+</project>

@@ -1,0 +1,87 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
+  <!--
+    This jelly script is used for per-project configuration.
+
+    See global.jelly for a general discussion about jelly script.
+  -->
+  <f:block>
+      <table width="100%">
+            <f:entry title="${%serverURI.title}"  field="serverURI" >
+                <f:textbox name="serverURI" clazz="required" checkMessage="${%serverURI.checkMessage}" />
+            </f:entry>
+            
+            <f:entry title="${%credentialsId.title}" field="credentialsId" >
+                <c:select name="credentialsId"/>
+            </f:entry>
+            <f:entry title="${%timeout.title}" field="timeout">
+            <f:textbox name="timeout" default="480" />
+            </f:entry>
+        
+            <f:validateButton title="${%checkJobConnection.title}" progress="${%checkJobConnection.progress}" 
+               method="checkJobConnection" with="serverURI,credentialsId,timeout" />
+               
+            
+	        
+	        <f:optionalBlock title="${%jenkinsRootURI.type}" name="jenkinsRootURIOverride" field="jenkinsRootURIOverride" checked="${instance.jenkinsRootURIOverride}" inline="true">
+			    <f:entry title="${%jenkinsRootURI.title}"  field="jenkinsRootURI" >
+			        <f:textbox name="jenkinsRootURI" clazz="required" checkMessage="${%jenkinsRootURI.checkMessage}"/>
+			    </f:entry>
+	        </f:optionalBlock>
+	        
+	        <f:optionalBlock title="${%useBuildDefinition.type}" name="useBuildDefinition" field="useBuildDefinition" checked="${instance.useBuildDefinition}" inline="true">
+			    <f:entry title="${%buildDefinition.title}"  field="buildDefinition" >
+			        <f:textbox name="buildDefinition" clazz="required" checkMessage="${%buildDefinition.checkMessage}"/>
+			    </f:entry>
+			    <f:validateButton title="${%validateBuildDefinition.title}" progress="${%validateBuildDefinition.progress}" 
+                   method="validateBuildDefinition" with="serverURI,credentialsId,buildDefinition,timeout" />
+	        </f:optionalBlock>
+	        
+	        <f:optionalBlock title="${%changeLogAnnotator.title}" name="annotateChangeLog" field="annotateChangeLog" checked="${instance.annotateChangeLog}" inline="true">
+	        </f:optionalBlock>
+	        
+	        <f:optionalBlock title="${%useWorkItems.type}" name="useWorkItems" field="useWorkItems" checked="${instance.useWorkItems}" inline="true">
+	        <j:if test="${instance.workItemUpdateType eq 'withLink' or empty instance.workItemUpdateType}">
+	          <f:entry title="${%updateWorkItem.type}">
+		        <select name="workItemUpdateType" field="workItemUpdateType">
+		          <option value="withComment">${%withComment.title}</option>
+		          <option value="withLink" selected='true'>${%withLink.title}</option>
+		          <option value="withCommentAndLink">${%withCommentAndLink.title}</option>
+		        </select>
+		      </f:entry>
+		    </j:if>
+		    
+		    <j:if test="${instance.workItemUpdateType eq 'withComment'}">
+	          <f:entry title="${%updateWorkItem.type}">
+		        <select name="workItemUpdateType" field="workItemUpdateType">
+		          <option value="withComment" selected='true'>${%withComment.title}</option>
+		          <option value="withLink" >${%withLink.title}</option>
+		          <option value="withCommentAndLink">${%withCommentAndLink.title}</option>
+		        </select>
+		      </f:entry>
+		    </j:if>
+		    
+		    <j:if test="${instance.workItemUpdateType eq 'withCommentAndLink' }">
+	          <f:entry title="${%updateWorkItem.type}">
+		        <select name="workItemUpdateType" field="workItemUpdateType">
+		          <option value="withComment">${%withComment.title}</option>
+		          <option value="withLink" selected='true'>${%withLink.title}</option>
+		          <option value="withCommentAndLink" selected='true'>${%withCommentAndLink.title}</option>
+		        </select>
+		      </f:entry>
+		    </j:if>
+		    </f:optionalBlock>
+		    
+		    <f:optionalBlock title="${%useTrackBuildWorkItem.type}" name="useTrackBuildWorkItem" field="useTrackBuildWorkItem" checked="${instance.useTrackBuildWorkItem}" inline="true">
+		    <f:entry title="${%trackBuildWorkItem.type}" field="trackBuildWorkItem">
+               <f:textbox name="trackBuildWorkItem" clazz="required" checkMessage="${%trackBuildWorkItem.checkMessage}"/>
+            </f:entry>
+            <f:validateButton title="${%validateTrackBuildWorkItem.title}" progress="${%validateTrackBuildWorkItem.progress}" 
+                   method="validateTrackBuildWorkItem" with="serverURI,credentialsId,trackBuildWorkItem,timeout" />
+            </f:optionalBlock>
+		    
+		    
+	    </table>
+  </f:block>
+  
+  
+</j:jelly>
