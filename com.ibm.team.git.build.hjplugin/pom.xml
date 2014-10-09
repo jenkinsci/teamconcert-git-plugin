@@ -20,7 +20,7 @@
   
   <groupId>com.ibm.team.git.build.hjplugin</groupId>
   <artifactId>teamconcert.git</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>hpi</packaging>
   
   <name>Team Concert Git Plugin</name>
