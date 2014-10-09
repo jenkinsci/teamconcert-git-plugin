@@ -18,9 +18,8 @@
 		<version>1.480.3</version>
   </parent>
   
-  <groupId>com.ibm.team.git.build.hjplugin</groupId>
-  <artifactId>teamconcert.git</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <artifactId>teamconcert-git</artifactId>
+  <version>1.0.5-SNAPSHOT</version>
   <packaging>hpi</packaging>
   
   <name>Team Concert Git Plugin</name>
@@ -49,6 +48,7 @@
 		<developer>
 			<id>clkkishore</id>
 			<name>Krishna Kishore</name>
+			<email>clkkishore@gmail.com</email>
 		</developer>
 	</developers>
   
