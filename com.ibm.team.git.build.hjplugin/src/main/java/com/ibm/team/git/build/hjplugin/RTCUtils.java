@@ -194,6 +194,7 @@ public class RTCUtils {
 		List<String> wiList = new ArrayList<String>();
 		if (comment != null) {
 			comment = comment.replaceAll("^\"|\"$", "");
+			comment = comment.replaceAll("[\t\n\r]", " ");
 			String[] tokens = comment.split(" ");
 			int len = tokens.length;
 			for (int i = 0; i < len; i++) {

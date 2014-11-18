@@ -50,6 +50,26 @@ public class CommiDataTests {
 	}
 	
 	@Test
+	public void testWorkItemInCommitComment3() {
+		String[] wi = new String[] { "1", "2", "3", "4" };
+		StringBuffer multiComment = new StringBuffer();
+		multiComment.append("test workitems in multiple lines");
+		multiComment.append(System.getProperty("line.separator"));
+		multiComment.append(String.format("bug %s; defect %s",wi[0], wi[1]));
+		multiComment.append(System.getProperty("line.separator"));
+		multiComment.append(String.format("task %s: workitem %s;", wi[2], wi[3]));
+		multiComment.append(System.getProperty("line.separator"));
+		//System.out.print(multiComment.toString());
+		String[] result = getWorkItemsFromCommitComment(multiComment.toString());
+		Assert.assertNotNull(result);
+		Assert.assertTrue(result.length == wi.length);
+		Assert.assertTrue(wi[0].equals(result[0]));
+		Assert.assertTrue(wi[1].equals(result[1]));
+		Assert.assertTrue(wi[2].equals(result[2]));
+		Assert.assertTrue(wi[3].equals(result[3]));
+	}
+	
+	@Test
 	public void testNoWorkItemInCommitComment1() {
 		String comment = "bug a defect b task c workitem d";
 		String[] result = getWorkItemsFromCommitComment(comment);
