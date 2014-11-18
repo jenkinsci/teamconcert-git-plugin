@@ -19,7 +19,7 @@
   </parent>
   
   <artifactId>teamconcert-git</artifactId>
-  <version>1.0.9-SNAPSHOT</version>
+  <version>1.0.9</version>
   <packaging>hpi</packaging>
   
   <name>Team Concert Git Plugin</name>
@@ -203,7 +203,7 @@
 										</goals>
 									</pluginExecutionFilter>
 									<action>
-										<ignore></ignore>
+										<ignore />
 									</action>
 								</pluginExecution>
 							</pluginExecutions>
@@ -218,6 +218,6 @@
     	<url>https://github.com/jenkinsci/teamconcert-git-plugin</url>
     	<connection>scm:git:https://github.com/jenkinsci/teamconcert-git-plugin.git</connection>
     	<developerConnection>scm:git:https://github.com/jenkinsci/teamconcert-git-plugin.git</developerConnection>
-    	<tag>HEAD</tag>
+    	<tag>tc-git-1.0.9-retry-4</tag>
     </scm>
 </project>
