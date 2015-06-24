@@ -1,13 +1,11 @@
-/*******************************************************************************
- * Copyright (c) 2014 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+/******************************************************************************
+ * Licensed Materials - Property of IBM
+ * (c) Copyright IBM Corporation 2011, 2015. All Rights Reserved.
+ * 
+ * Note to U.S. Government Users Restricted Rights:
+ * Use, duplication or disclosure restricted by GSA ADP Schedule
+ * Contract with IBM Corp.
+ ******************************************************************************/
 
 package com.ibm.team.git.build.hjplugin;
 
@@ -15,21 +13,17 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
+import org.apache.http.NameValuePair;
 import org.apache.http.auth.InvalidCredentialsException;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.message.BasicNameValuePair;
+
 import com.ibm.team.git.build.hjplugin.http.HttpUtils;
 import com.ibm.team.git.build.hjplugin.http.HttpUtils.RtcHttpResult;
-
-import org.apache.http.NameValuePair;
 import com.ibm.team.git.build.hjplugin.scm.ChangeSetData;
 import com.ibm.team.git.build.hjplugin.util.RTCHttpConstants;
-
-import com.ibm.team.git.build.hjplugin.Messages;
 
 public class RTCConnector {
 

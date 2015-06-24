@@ -18,6 +18,7 @@
 		<version>1.480.3</version>
   </parent>
   
+  <groupId>org.jenkins-ci.plugins</groupId>
   <artifactId>teamconcert-git</artifactId>
   <version>1.0.10-SNAPSHOT</version>
   <packaging>hpi</packaging>
@@ -156,7 +157,6 @@
 			<plugin>
 			  <groupId>org.apache.maven.plugins</groupId>
               <artifactId>maven-release-plugin</artifactId>
-              <version>2.5</version>
               <dependencies>
                <dependency>
                 <groupId>org.apache.maven.scm</groupId>
