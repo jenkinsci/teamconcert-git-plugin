@@ -42,7 +42,7 @@ public class RTCGitChangelogAnnotator extends ChangeLogAnnotator {
 				&& bAction.getRtcURL() != null) {
 			LOGGER.log(Level.FINE, "In RTC annotate");
 			HashMap<String, String> wiMap = getWorkitemsInfo(build, bAction);
-			annotateWithRtc(change, text, wiMap, bAction.getRtcURL());
+			annotateWithRtc(change, text, wiMap, bAction.getRtcURL(), bAction.getWorkItemLinkFormat());
 		}
 	}
 
@@ -86,13 +86,18 @@ public class RTCGitChangelogAnnotator extends ChangeLogAnnotator {
 	}
 
 	private void annotateWithRtc(Entry change, MarkupText text,
-			HashMap<String, String> wiMap, String rtcURL) {
+			HashMap<String, String> wiMap, String rtcURL, String workItemLinkFormat) {
 		String tStr = text.getText();
 		Pattern pattern = null;
 		try {
-			pattern = Pattern.compile(REGEX);
+			if (workItemLinkFormat != null) {
+				pattern = Pattern.compile(workItemLinkFormat);
+			} else {
+				pattern = Pattern.compile(REGEX);
+			}
 		} catch (PatternSyntaxException e) {
-			LOGGER.log(Level.WARNING, "Cannot compile pattern: {0}", REGEX);
+			LOGGER.log(Level.WARNING, "Cannot compile pattern: {0}",
+					workItemLinkFormat != null ? workItemLinkFormat : REGEX);
 			return;
 		}
 
@@ -100,8 +105,10 @@ public class RTCGitChangelogAnnotator extends ChangeLogAnnotator {
 			Integer key = null;
 			try {
 				key = getWorkItemId(token);
-				if (!RTCUtils.matchesKey(tStr.substring(0, token.start()))) {
-					continue;
+				if (workItemLinkFormat == null) {
+					if (!RTCUtils.matchesKey(tStr.substring(0, token.start()))) {
+						continue;
+					}
 				}
 			} catch (Exception e) {
 				continue;

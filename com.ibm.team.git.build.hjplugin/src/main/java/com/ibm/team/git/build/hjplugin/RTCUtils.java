@@ -29,6 +29,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jenkins.model.Jenkins;
 
@@ -162,14 +164,23 @@ public class RTCUtils {
 		return null;
 	}
 
-	public static String[] getAllWorkItems(List<ChangeSetData> csData) {
+	public static String[] getAllWorkItems(List<ChangeSetData> csData,
+										   String workItemLinkFormat) {
+		Pattern pattern = workItemLinkFormat != null
+				? Pattern.compile(workItemLinkFormat)
+				: null;
+
 		Set<String> wiSet = new HashSet<String>();
 		for (ChangeSetData commit : csData) {
-			List<String> wItems = RTCUtils
-					.getWorkItemsFromCommitComment(commit.comment);
-			wiSet.addAll(wItems);
+			if (workItemLinkFormat != null) {
+				wiSet.addAll(allMatches(commit.comment, pattern));
+			} else {
+				List<String> wItems = RTCUtils
+						.getWorkItemsFromCommitComment(commit.comment);
+				wiSet.addAll(wItems);
+			}
 		}
-		return wiSet.toArray(new String[0]);
+		return wiSet.toArray(new String[wiSet.size()]);
 	}
 
 	public static List<String> getWorkItemsFromCommitComment(
@@ -248,6 +259,19 @@ public class RTCUtils {
 					|| str.endsWith(TASK_KEY) || str.endsWith(WORKITEM_KEY));
 		}
 		return false;
+	}
+
+	public static Set<String> allMatches(String text, Pattern pattern) {
+		Set<String> result = new HashSet<String>();
+		if (pattern != null && text != null) {
+			Matcher matcher = pattern.matcher(text);
+			while (matcher.find()) {
+				if (matcher.groupCount() == 1) {
+					result.add(matcher.group(1));
+				}
+			}
+		}
+		return result;
 	}
 
 	public static boolean IsNullOrEmpty(String s) {

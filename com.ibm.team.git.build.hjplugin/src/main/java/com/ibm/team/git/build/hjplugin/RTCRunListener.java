@@ -43,7 +43,7 @@ public class RTCRunListener extends RunListener<AbstractBuild<?, ?>> {
 						RTCConnector rCon = new RTCConnector(
 								rtcGitBuilder.getServerURI(),
 								loginInfo.getUserId(), loginInfo.getPassword(),
-								loginInfo.getTimeout(), null, null, false,
+								loginInfo.getTimeout(), null, null, null, false,
 								null, null, null, null);
 						rCon.updateWorkItem(listener.getLogger(),
 								Integer.toString(rtcGitBuilder
@@ -100,7 +100,7 @@ public class RTCRunListener extends RunListener<AbstractBuild<?, ?>> {
 					RTCConnector rCon = new RTCConnector(
 							rtcGitBuilder.getServerURI(),
 							loginInfo.getUserId(), loginInfo.getPassword(),
-							loginInfo.getTimeout(), null, null, false,
+							loginInfo.getTimeout(), null, null, null, false,
 							buildResultUUID, null, null, null);
 					rCon.completeBuild(listener.getLogger(),
 							getBuildResult(build.getResult()));

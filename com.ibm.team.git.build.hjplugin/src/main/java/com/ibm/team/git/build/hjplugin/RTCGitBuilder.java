@@ -47,6 +47,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import com.ibm.team.git.build.hjplugin.Messages;
 
@@ -68,6 +69,8 @@ public class RTCGitBuilder extends Builder {
 	boolean useWorkItems;
 	int trackBuildWorkItem;
 	boolean useTrackBuildWorkItem;
+	boolean customWorkItemLinkFormat;
+	private String workItemLinkFormat;
 
 	// Fields in config.jelly must match the parameter names in the
 	// "DataBoundConstructor"
@@ -77,7 +80,8 @@ public class RTCGitBuilder extends Builder {
 			boolean useBuildDefinition, String buildDefinition,
 			boolean annotateChangeLog, boolean useWorkItems,
 			String workItemUpdateType, boolean useTrackBuildWorkItem,
-			int trackBuildWorkItem) {
+			int trackBuildWorkItem, boolean customWorkItemLinkFormat,
+			String workItemLinkFormat) {
 		this.serverURI = serverURI;
 		this.credentialsId = credentialsId;
 		this.timeout = timeout;
@@ -91,6 +95,8 @@ public class RTCGitBuilder extends Builder {
 		this.useWorkItems = useWorkItems;
 		this.useTrackBuildWorkItem = useTrackBuildWorkItem;
 		this.trackBuildWorkItem = trackBuildWorkItem;
+		this.customWorkItemLinkFormat = customWorkItemLinkFormat;
+		this.workItemLinkFormat = workItemLinkFormat;
 	}
 
 	@Override
@@ -106,7 +112,7 @@ public class RTCGitBuilder extends Builder {
 				RTCConnector rCon = new RTCConnector(serverURI,
 						loginInfo.getUserId(), loginInfo.getPassword(),
 						loginInfo.getTimeout(), buildDefinition,
-						workItemUpdateType, useBuildDefinition,
+						workItemUpdateType, workItemLinkFormat, useBuildDefinition,
 						rtcBuildUUID, jRootURI, bURI, buildName);
 				if (useBuildDefinition) {
 					rtcBuildUUID = build.getEnvironment(listener).get(
@@ -140,7 +146,8 @@ public class RTCGitBuilder extends Builder {
 			BuildParameterAction bAction = new BuildParameterAction(credentialsId, timeout, serverURI,
 					rtcBuildUUID, ownsBuildCycle,
 					(useTrackBuildWorkItem ? Integer.toString(trackBuildWorkItem) : null),
-					annotateChangeLog);
+					annotateChangeLog,
+					(customWorkItemLinkFormat ? workItemLinkFormat : null));
 			build.getActions().add(bAction);
 
 			if (GitScmUtils.isGitScmBuild(build)) {
@@ -153,11 +160,13 @@ public class RTCGitBuilder extends Builder {
 				RTCConnector rCon = new RTCConnector(serverURI,
 						loginInfo.getUserId(), loginInfo.getPassword(),
 						loginInfo.getTimeout(), buildDefinition,
-						workItemUpdateType, useBuildDefinition, rtcBuildUUID,
+						workItemUpdateType, workItemLinkFormat,
+						useBuildDefinition, rtcBuildUUID,
 						jRootURI, bURI, buildName);
 
 				List<ChangeSetData> csData = GitScmUtils.getIncludedCommits(build, logger);
-				bAction.setWorkitems(RTCUtils.getAllWorkItems(csData));
+				bAction.setWorkitems(RTCUtils.getAllWorkItems(csData,
+						customWorkItemLinkFormat ? workItemLinkFormat : null));
 				rCon.publishCommitData(logger, csData);
 			}
 		} catch (Exception e) {
@@ -228,6 +237,20 @@ public class RTCGitBuilder extends Builder {
 				return FormValidation.ok();
 			}
 			return FormValidation.validatePositiveInteger(trackBuildWorkItem);
+		}
+
+		public FormValidation doValidateWorkItemLinkFormat(
+				@QueryParameter("workItemLinkFormat") String workItemLinkFormat) {
+			if (RTCUtils.IsNullOrEmpty(workItemLinkFormat)) {
+				return FormValidation.ok();
+			}
+			try {
+				//noinspection ResultOfMethodCallIgnored
+				Pattern.compile(workItemLinkFormat);
+			} catch (Exception e) {
+				return FormValidation.error(Messages.RTC_workitemlinkformat_check_invalid());
+			}
+			return FormValidation.ok(Messages.RTC_workitemlinkformat_check_success());
 		}
 
 		public FormValidation doValidateTrackBuildWorkItem(
@@ -478,4 +501,11 @@ public class RTCGitBuilder extends Builder {
 		return useTrackBuildWorkItem;
 	}
 
+	public boolean getCustomWorkItemLinkFormat() {
+		return customWorkItemLinkFormat;
+	}
+
+	public String getWorkItemLinkFormat() {
+		return workItemLinkFormat;
+	}
 }

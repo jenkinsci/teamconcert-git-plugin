@@ -15,6 +15,7 @@ import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.auth.InvalidCredentialsException;
 import org.apache.http.client.protocol.HttpClientContext;
@@ -30,6 +31,7 @@ public class RTCConnector {
 	private final String serverURI;
 	private final String buildDefinition;
 	private final String workItemUpdateType;
+	private final String workItemLinkFormat;
 	private final boolean useBuildDefinition;
 	private final String jenkinsRootURI;
 	private final String jenkinsBuildURI;
@@ -43,6 +45,7 @@ public class RTCConnector {
 
 	public RTCConnector(String serverURI, String userId, String password,
 			int timeout, String buildDefinition, String workItemUpdateType,
+			String workItemLinkFormat,
 			boolean useBuildDefinition, String buildResultUUID,
 			String jenkinsRootURI, String jenkinsBuildURI, String buildName) {
 		this.serverURI = RTCUtils.formatURI(serverURI);
@@ -51,6 +54,7 @@ public class RTCConnector {
 		this.timeout = timeout;
 		this.buildDefinition = buildDefinition;
 		this.workItemUpdateType = workItemUpdateType;
+		this.workItemLinkFormat = StringUtils.isBlank(workItemLinkFormat) ? null : workItemLinkFormat;
 		this.useBuildDefinition = useBuildDefinition;
 		this.buildResultUUID = buildResultUUID;
 		this.jenkinsBuildURI = jenkinsBuildURI;
@@ -249,7 +253,7 @@ public class RTCConnector {
 
 		private void fillWorkItems(List<ChangeSetData> csData,
 				List<NameValuePair> params) {
-			String[] workitems = RTCUtils.getAllWorkItems(csData);
+			String[] workitems = RTCUtils.getAllWorkItems(csData, workItemLinkFormat);
 			if (workitems != null) {
 				for (String wi : workitems) {
 					params.add(new BasicNameValuePair(

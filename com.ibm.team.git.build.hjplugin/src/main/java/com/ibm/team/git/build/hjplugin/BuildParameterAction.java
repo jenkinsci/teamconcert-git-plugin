@@ -11,6 +11,7 @@
 package com.ibm.team.git.build.hjplugin;
 
 import hudson.model.InvisibleAction;
+import org.apache.commons.lang.StringUtils;
 
 public class BuildParameterAction extends InvisibleAction {
 
@@ -19,6 +20,7 @@ public class BuildParameterAction extends InvisibleAction {
 	private final boolean shouldAnnotate;
 	private final boolean ownsBuildCycle;
 	private String credentialsId;
+	private String workItemLinkFormat;
 	private String trackbuildwi;
 	private final int timeout;
 	private String[] workitems;
@@ -26,11 +28,13 @@ public class BuildParameterAction extends InvisibleAction {
 	public BuildParameterAction(String credentialsId, int timeout,
 			String rtcURL, String rtcBuildUUID, boolean ownsBuildCycle,
 			String trackbuildwi,
-			boolean shouldAnnotate) {
+			boolean shouldAnnotate,
+			String workItemLinkFormat) {
 		this.credentialsId = credentialsId;
 		this.rtcURL = rtcURL;
 		this.rtcBuildUUID = rtcBuildUUID;
 		this.shouldAnnotate = shouldAnnotate;
+		this.workItemLinkFormat = StringUtils.isBlank(workItemLinkFormat) ? null : workItemLinkFormat;
 		this.ownsBuildCycle = ownsBuildCycle;
 		this.trackbuildwi = trackbuildwi;
 		this.timeout = timeout;
@@ -70,5 +74,9 @@ public class BuildParameterAction extends InvisibleAction {
 
 	public void setWorkitems(String[] workitems) {
 		this.workitems = workitems;
+	}
+
+	public String getWorkItemLinkFormat() {
+		return workItemLinkFormat;
 	}
 }

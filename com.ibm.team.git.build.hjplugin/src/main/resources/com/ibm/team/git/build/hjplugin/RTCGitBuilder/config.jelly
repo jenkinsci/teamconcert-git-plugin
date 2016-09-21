@@ -69,6 +69,14 @@
 		        </select>
 		      </f:entry>
 		    </j:if>
+
+				<f:optionalBlock title="${%customWorkItemLinkFormat.type}" name="customWorkItemLinkFormat" field="customWorkItemLinkFormat" checked="${instance.customWorkItemLinkFormat}" inline="true">
+					<f:entry title="${%workItemLinkFormat.type}" field="workItemLinkFormat">
+						<f:textbox name="workItemLinkFormat" clazz="required" checkMessage="${%workItemLinkFormat.checkMessage}"/>
+					</f:entry>
+					<f:validateButton title="${%validateWorkItemLinkFormat.title}" progress="${%validateWorkItemLinkFormat.progress}"
+									  method="validateWorkItemLinkFormat" with="workItemLinkFormat" />
+				</f:optionalBlock>
 		    </f:optionalBlock>
 		    
 		    <f:optionalBlock title="${%useTrackBuildWorkItem.type}" name="useTrackBuildWorkItem" field="useTrackBuildWorkItem" checked="${instance.useTrackBuildWorkItem}" inline="true">
@@ -78,8 +86,7 @@
             <f:validateButton title="${%validateTrackBuildWorkItem.title}" progress="${%validateTrackBuildWorkItem.progress}" 
                    method="validateTrackBuildWorkItem" with="serverURI,credentialsId,trackBuildWorkItem,timeout" />
             </f:optionalBlock>
-		    
-		    
+
 	    </table>
   </f:block>
   
