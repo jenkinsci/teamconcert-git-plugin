@@ -93,18 +93,18 @@ public class RTCRunListener extends RunListener<AbstractBuild<?, ?>> {
 			List<RTCGitBuilder> rtcBuilders = getRTCBuilders(build.getProject());
 			if (rtcBuilders != null) {
 				for (RTCGitBuilder rtcGitBuilder : rtcBuilders) {
-					if (rtcGitBuilder.getUseTrackBuildWorkItem()) {
-						RTCLoginInfo loginInfo = new RTCLoginInfo(build,
-								rtcGitBuilder.getServerURI(),
-								rtcGitBuilder.getCredentialsId(),
-								rtcGitBuilder.getTimeout());
-						RTCConnector rCon = new RTCConnector(
-								rtcGitBuilder.getServerURI(),
-								loginInfo.getUserId(), loginInfo.getPassword(),
-								loginInfo.getTimeout(), null, null, false,
-								buildResultUUID, null, null, null);
-						rCon.completeBuild(listener.getLogger(),
-								getBuildResult(build.getResult()));
+					RTCLoginInfo loginInfo = new RTCLoginInfo(build,
+							rtcGitBuilder.getServerURI(),
+							rtcGitBuilder.getCredentialsId(),
+							rtcGitBuilder.getTimeout());
+					RTCConnector rCon = new RTCConnector(
+							rtcGitBuilder.getServerURI(),
+							loginInfo.getUserId(), loginInfo.getPassword(),
+							loginInfo.getTimeout(), null, null, false,
+							buildResultUUID, null, null, null);
+					rCon.completeBuild(listener.getLogger(),
+							getBuildResult(build.getResult()));
+					if (rtcGitBuilder.getUseTrackBuildWorkItem() && bAction != null) {
 						rCon.updateWorkItem(listener.getLogger(), bAction
 								.getTrackbuildWi(), RTCUtils
 								.getCompleteBuildComment(RTCUtils
