@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corporation and others.
+ * Copyright (c) 2014, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -10,107 +10,48 @@
  *******************************************************************************/
 package com.ibm.team.git.build.hjplugin;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import hudson.Extension;
-import hudson.matrix.MatrixProject;
 import hudson.model.Result;
+import hudson.model.Run;
 import hudson.model.TaskListener;
-import hudson.model.AbstractBuild;
-import hudson.model.Project;
 import hudson.model.listeners.RunListener;
 
-import com.ibm.team.git.build.hjplugin.Messages;
-
 @Extension
-public class RTCRunListener extends RunListener<AbstractBuild<?, ?>> {
+public class RTCRunListener extends RunListener<Run<?, ?>> {
 
 	private static final Logger LOGGER = Logger.getLogger(RTCRunListener.class
 			.getName());
-
+	
 	@Override
-	public void onStarted(AbstractBuild<?, ?> build, TaskListener listener) {
+	public void onCompleted(Run<?, ?> build, TaskListener listener) {
+		LOGGER.finest("RTCRunListener.onCompleted : Begin"); //$NON-NLS-1$
 		try {
-			List<RTCGitBuilder> rtcBuilders = getRTCBuilders(build.getProject());
-			if (rtcBuilders != null) {
-				for (RTCGitBuilder rtcGitBuilder : rtcBuilders) {
-					if (rtcGitBuilder.getUseTrackBuildWorkItem()) {
-						RTCLoginInfo loginInfo = new RTCLoginInfo(build,
-								rtcGitBuilder.getServerURI(),
-								rtcGitBuilder.getCredentialsId(),
-								rtcGitBuilder.getTimeout());
-						RTCConnector rCon = new RTCConnector(
-								rtcGitBuilder.getServerURI(),
-								loginInfo.getUserId(), loginInfo.getPassword(),
-								loginInfo.getTimeout(), null, null, false,
-								null, null, null, null);
-						rCon.updateWorkItem(listener.getLogger(),
-								Integer.toString(rtcGitBuilder
-										.getTrackBuildWorkItem()), RTCUtils
-										.getBuildStartedComment(listener
-												.getLogger(), RTCUtils
-												.getFullBuildURL(build, null,
-														null), build
-												.getFullDisplayName(), null,
-												RTCUtils.getBuildUser(build)));
-					}
-				}
-			}
-		} catch (Exception e) {
-			RTCUtils.LogMessage(listener.getLogger(),
-					Messages.Error_UpdatingBuildStatus());
-			RTCUtils.LogMessage(listener.getLogger(), e.getMessage());
-		}
-	}
-
-	private List<RTCGitBuilder> getRTCBuilders(Object project) {
-		List<RTCGitBuilder> rBuilds = new ArrayList<RTCGitBuilder>();
-		if (project instanceof Project) {
-			for (Object builder : ((Project) project).getBuilders()) {
-				if (builder instanceof RTCGitBuilder) {
-					rBuilds.add((RTCGitBuilder) builder);
-				}
-			}
-		} else if (project instanceof MatrixProject) {
-			for (Object builder : ((MatrixProject) project)
-					.getBuildWrappersList()) {
-				if (builder instanceof RTCGitBuilder) {
-					rBuilds.add((RTCGitBuilder) builder);
-				}
-			}
-		}
-		return rBuilds;
-	}
-
-	@Override
-	public void onCompleted(AbstractBuild<?, ?> build, TaskListener listener) {
-		try {
-			BuildParameterAction bAction = build
-					.getAction(BuildParameterAction.class);
-			String buildResultUUID = bAction != null ? bAction
-					.getRtcBuildUUID() : null;
-			List<RTCGitBuilder> rtcBuilders = getRTCBuilders(build.getProject());
-			if (rtcBuilders != null) {
-				for (RTCGitBuilder rtcGitBuilder : rtcBuilders) {
-					if (rtcGitBuilder.getUseTrackBuildWorkItem()) {
-						RTCLoginInfo loginInfo = new RTCLoginInfo(build,
-								rtcGitBuilder.getServerURI(),
-								rtcGitBuilder.getCredentialsId(),
-								rtcGitBuilder.getTimeout());
-						RTCConnector rCon = new RTCConnector(
-								rtcGitBuilder.getServerURI(),
-								loginInfo.getUserId(), loginInfo.getPassword(),
-								loginInfo.getTimeout(), null, null, false,
-								buildResultUUID, null, null, null);
-						rCon.completeBuild(listener.getLogger(),
-								getBuildResult(build.getResult()));
+			List<BuildParameterAction> bActions = build
+					.getActions(BuildParameterAction.class);
+			if (bActions != null) {
+				for (BuildParameterAction bAction : bActions) {
+					RTCLoginInfo loginInfo = new RTCLoginInfo(build.getParent(),
+							bAction.getRtcURL(),
+							bAction.getCredentialsId(),
+							bAction.getTimeout());
+					RTCConnector rCon = new RTCConnector(
+							bAction.getRtcURL(),
+							loginInfo.getUserId(), loginInfo.getPassword(),
+							loginInfo.getTimeout(), null, null, false,
+							bAction.getRtcBuildUUID(), null, null, null, bAction.iOwnBuildCycle());
+					rCon.completeBuild(listener.getLogger(),
+							getBuildResult(build.getResult()));
+					if (bAction.getTrackbuildWi() != null) {
 						rCon.updateWorkItem(listener.getLogger(), bAction
-								.getTrackbuildWi(), RTCUtils
-								.getCompleteBuildComment(RTCUtils
-										.getFullBuildURL(build, null, null),
-										build.getFullDisplayName(),
-										getBuildStatus(build.getResult())));
+									.getTrackbuildWi(), RTCUtils
+									.getCompleteBuildComment(RTCUtils
+											.getFullBuildURL(build, null, null),
+											build.getFullDisplayName(),
+											getBuildStatus(build.getResult())));
 					}
 				}
 			}
@@ -118,6 +59,7 @@ public class RTCRunListener extends RunListener<AbstractBuild<?, ?>> {
 			RTCUtils.LogMessage(listener.getLogger(),
 					Messages.Error_UpdatingBuildStatus());
 			RTCUtils.LogMessage(listener.getLogger(), e.getMessage());
+			LOGGER.log(Level.WARNING, Messages.Error_UpdatingBuildStatus(), e);
 		}
 	}
 
@@ -127,18 +69,15 @@ public class RTCRunListener extends RunListener<AbstractBuild<?, ?>> {
 		return 1;
 	}
 
-	private String getBuildStatus(Result result) {
+	private static String getBuildStatus(Result result) {
 		if (result != null) {
 			return result.toString();
 		}
-		return "";
+		return ""; //$NON-NLS-1$
 	}
 
 	@Override
-	public void onDeleted(AbstractBuild<?, ?> r) {
-		// TODO
-		// com.ibm.team.build.client.ITeamBuildBaseClient.delete(IBuildResultHandle,
-		// IProgressMonitor)
+	public void onDeleted(Run<?, ?> r) {
 		super.onDeleted(r);
 	}
 

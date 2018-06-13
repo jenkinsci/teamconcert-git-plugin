@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corporation and others.
+ * Copyright (c) 2014, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,7 +12,6 @@
 package com.ibm.team.git.build.hjplugin;
 
 import hudson.Util;
-import hudson.model.AbstractBuild;
 import hudson.model.Cause;
 import hudson.model.Hudson;
 import hudson.model.Job;
@@ -36,6 +35,9 @@ import org.acegisecurity.context.SecurityContextHolder;
 import com.ibm.team.git.build.hjplugin.scm.ChangeSetData;
 import com.ibm.team.git.build.hjplugin.util.RTCHttpConstants;
 
+/**
+ *
+ */
 public class RTCUtils {
 
 	private static final Logger LOGGER = Logger.getLogger(RTCUtils.class
@@ -46,6 +48,8 @@ public class RTCUtils {
 	private static String TASK_KEY = "task"; //$NON-NLS-1$
 	private static String DEFECT_KEY = "defect"; //$NON-NLS-1$
 	private static String WORKITEM_KEY = "workitem"; //$NON-NLS-1$
+	private static String WORKITEM_KEY_2 = "work item"; //$NON-NLS-1$
+	private static String RTCWI_KEY = "rtcwi"; //$NON-NLS-1$
 
 	private static final String WI_MODE_COMMENTS = "C"; //$NON-NLS-1$
 	private static final String WI_MODE_LINKS = "L"; //$NON-NLS-1$
@@ -56,7 +60,7 @@ public class RTCUtils {
 	private static final String WI_MODE_LINKS_AND_COMMEMNTS_KEY = "withCommentAndLink"; //$NON-NLS-1$
 
 	private static List<String> KEYS = Arrays.asList(new String[] { BUG_KEY,
-			TASK_KEY, DEFECT_KEY, WORKITEM_KEY });
+			TASK_KEY, DEFECT_KEY, WORKITEM_KEY, RTCWI_KEY });
 	private static List<Character> PCHARS = Arrays.asList(new Character[] {
 			',', ':', ';' });
 
@@ -65,31 +69,32 @@ public class RTCUtils {
 			logger.println(msg);
 	}
 
-	public static String getBuildURL(AbstractBuild<?, ?> build,
+	public static String getBuildURL(Run<?, ?> build,
 			PrintStream logger) {
 		String sUrl = build.getUrl();
-		LOGGER.finer(String.format("Build Status URL : %s", sUrl));
+		LOGGER.finer(String.format("Build Status URL : %s", sUrl)); //$NON-NLS-1$
 		return sUrl;
 	}
 
-	public static String getBuildFullName(AbstractBuild<?, ?> build,
+	public static String getBuildFullName(Run<?, ?> build,
 			PrintStream logger) {
 		String name = build.getFullDisplayName();
-		LOGGER.finer(String.format("Build Display Name : %s", name));
+		LOGGER.finer(String.format("Build Display Name : %s", name)); //$NON-NLS-1$
 		return name;
 	}
 	
-	public static String getBuildShortName(AbstractBuild<?, ?> build,
+	public static String getBuildShortName(Run<?, ?> build,
 			PrintStream logger) {
-		String name = String.format("#%s", build.getNumber());
-		LOGGER.finer(String.format("Build Short Name : %s", name));
+		String name = String.format("#%s", Integer.toString(build.getNumber())); //$NON-NLS-1$
+		LOGGER.finer(String.format("Build Short Name : %s", name)); //$NON-NLS-1$
 		return name;
 	}
 
-	public static String getFullBuildURL(AbstractBuild<?, ?> build,
+	public static String getFullBuildURL(Run<?, ?> build,
 			String jenkinsURI, PrintStream logger) {
-		String rootUrl = getRootURL(build, jenkinsURI, logger);
+		String rootUrl = getJenkinsRootURL(build, jenkinsURI, logger);
 		if (RTCUtils.IsNullOrEmpty(rootUrl)) {
+			LOGGER.warning("Jenkins root URI is null, provide a override URI in this plugin's configuration"); //$NON-NLS-1$
 			return null;
 		}
 		String buildUrl = getBuildURL(build, logger);
@@ -99,18 +104,22 @@ public class RTCUtils {
 		return formatURI(rootUrl) + buildUrl;
 	}
 
-	public static String getRootURL(AbstractBuild<?, ?> build,
+	public static String getJenkinsRootURL(Run<?, ?> build,
 			String jenkinsURI, PrintStream logger) {
 		String rUrl = Hudson.getInstance().getRootUrl();
 		if (RTCUtils.IsNullOrEmpty(rUrl)) {
-			LOGGER.finer("root url is null, will use the url configured by the user");
+			LOGGER.finer("root url is null, will use the url configured by the user"); //$NON-NLS-1$
 			rUrl = Util.fixNull(jenkinsURI);
 		}
-		LOGGER.finer(String.format("Jenkins Root URL : %s", rUrl));
+		if (rUrl == null ) {
+			LOGGER.warning("Jenkins root URI is null, provide a override URI in this plugin's configuration"); //$NON-NLS-1$
+		} else {
+			LOGGER.finer(String.format("Jenkins Root URL : %s", rUrl)); //$NON-NLS-1$
+		}
 		return rUrl;
 	}
 
-	public static String getBuildUser(AbstractBuild<?, ?> build) {
+	public static String getBuildUser(Run<?, ?> build) {
 		String userId = SecurityContextHolder.getContext().getAuthentication()
 				.getName();
 		User u = User.get(userId, false, Collections.emptyMap());
@@ -193,8 +202,14 @@ public class RTCUtils {
 	private static List<String> getWorkItemList(String comment) {
 		List<String> wiList = new ArrayList<String>();
 		if (comment != null) {
-			comment = comment.replaceAll("^\"|\"$", "");
-			comment = comment.replaceAll("[\t\n\r]", " ");
+		    LOGGER.info(" Comment before replacement " + comment); //$NON-NLS-1$
+			comment = comment.replaceAll("^\"|\"$", ""); //$NON-NLS-1$ //$NON-NLS-2$
+			comment = comment.replaceAll("[\t\n\r]", " "); //$NON-NLS-1$ //$NON-NLS-2$
+			// Replace all "work item" with "workitem"
+			// This enables us to support "work item" as a keyword
+			comment = comment.replaceAll("[Ww][Oo][Rr][Kk] [Ii][Tt][Ee][Mm]", WORKITEM_KEY); //$NON-NLS-1$
+		    LOGGER.info(" Comment after replacement " + comment); //$NON-NLS-1$
+
 			String[] tokens = comment.split(" ");
 			int len = tokens.length;
 			for (int i = 0; i < len; i++) {
@@ -245,7 +260,8 @@ public class RTCUtils {
 		if (str != null) {
 			str = str.trim().toLowerCase();
 			return (str.endsWith(BUG_KEY) || str.endsWith(DEFECT_KEY)
-					|| str.endsWith(TASK_KEY) || str.endsWith(WORKITEM_KEY));
+					|| str.endsWith(TASK_KEY) || str.endsWith(WORKITEM_KEY) || str.endsWith(RTCWI_KEY)
+					|| str.endsWith(WORKITEM_KEY_2));
 		}
 		return false;
 	}

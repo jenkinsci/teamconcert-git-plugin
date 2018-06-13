@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corporation and others.
+ * Copyright (c) 2014, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -34,7 +34,7 @@ public class RtcJsonUtil {
 	public static String getReturnValue(JSON json) {
 		JSONObject result = getResultJson(json);
 		if (result != null) {
-			Object value = result.get("value");
+			Object value = result.get("value"); //$NON-NLS-1$
 			if (value instanceof String) {
 				return ((String) value);
 			}
@@ -45,7 +45,7 @@ public class RtcJsonUtil {
 	public static String[] getReturnValues(JSON json) {
 		JSONObject result = getResultJson(json);
 		if (result != null) {
-			Object value = result.get("values");
+			Object value = result.get("values"); //$NON-NLS-1$
 			if (value instanceof JSONArray) {
 				JSONArray rArray = ((JSONArray) value);
 				if (rArray != null) {
@@ -67,7 +67,7 @@ public class RtcJsonUtil {
 	public static JSONObject getResultJson(JSON json) {
 		JSONObject responseObj = getResponseJson(json);
 		if (responseObj instanceof JSONObject) {
-			Object returnValue = ((JSONObject) responseObj).get("returnValue");
+			Object returnValue = ((JSONObject) responseObj).get("returnValue"); //$NON-NLS-1$
 			if (returnValue instanceof JSONObject) {
 				return ((JSONObject) returnValue);
 			}
@@ -81,9 +81,9 @@ public class RtcJsonUtil {
 
 	public static JSONObject getResponseJson(JSON json) {
 		if (json instanceof JSONObject) {
-			Object soapObj = ((JSONObject) json).get("soapenv:Body");
+			Object soapObj = ((JSONObject) json).get("soapenv:Body"); //$NON-NLS-1$
 			if (soapObj instanceof JSONObject) {
-				Object responseObj = ((JSONObject) soapObj).get("response");
+				Object responseObj = ((JSONObject) soapObj).get("response"); //$NON-NLS-1$
 				if (responseObj instanceof JSONObject) {
 					return ((JSONObject) responseObj);
 				}
@@ -95,7 +95,7 @@ public class RtcJsonUtil {
 	public static Boolean getBoolean(JSON json, String fieldName) {
 		if (json instanceof JSONObject
 				&& ((JSONObject) json).containsKey(fieldName)) {
-			return ((JSONObject) json).getBoolean(fieldName);
+			return Boolean.valueOf(((JSONObject) json).getBoolean(fieldName)); 
 		}
 		return null;
 	}
@@ -123,15 +123,15 @@ public class RtcJsonUtil {
 		// functionality.
 		// If null, don't throw an error in this block, but instead fall through
 		// handle as a version mismatch below
-		if ((isJTS != null) && (isJTS == true)) {
-			errorMessage = "Messages.RTCFacadeFacade_client_not_allowed_to_connect_to_JTS()";
+		if ((isJTS != null) && (isJTS == Boolean.TRUE)) {
+			errorMessage = "Messages.RTCFacadeFacade_client_not_allowed_to_connect_to_JTS()"; //$NON-NLS-1$
 		}
 
 		Boolean compatible = getBoolean(compatibilityCheckResult,
 				JSON_PROP_COMPATIBLE);
 		if (compatible == null) {
-			errorMessage = "Messages.RTCFacadeFacade_invalid_response_invoking_version_compatibility_service()";
-		} else if (compatible == false) {
+			errorMessage = "Messages.RTCFacadeFacade_invalid_response_invoking_version_compatibility_service()"; //$NON-NLS-1$
+		} else if (compatible == Boolean.FALSE) {
 			String upgradeURI = getString(compatibilityCheckResult,
 					JSON_PROP_URI);
 			String upgradeMessage = getString(compatibilityCheckResult,
@@ -139,10 +139,10 @@ public class RtcJsonUtil {
 			String serverVersion = getString(compatibilityCheckResult,
 					JSON_PROP_SERVER_VERSION);
 			if ((upgradeURI == null) || (upgradeMessage == null)
-					|| (serverVersion == null)) {
-				errorMessage = "Messages.RTCFacadeFacade_invalid_response_invoking_version_compatibility_service()";
+					|| (serverVersion == null)) { 
+				errorMessage = "Messages.RTCFacadeFacade_invalid_response_invoking_version_compatibility_service()"; //$NON-NLS-1$
 			} else {
-				errorMessage = "Messages.RTCFacadeFacade_incompatible2(serverVersion)";
+				errorMessage = "Messages.RTCFacadeFacade_incompatible2(serverVersion)"; //$NON-NLS-1$
 			}
 		}
 		return errorMessage;

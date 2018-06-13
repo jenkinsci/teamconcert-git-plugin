@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corporation and others.
+ * Copyright (c) 2014, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -9,12 +9,6 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package com.ibm.team.git.build.hjplugin;
-
-import hudson.Util;
-import hudson.model.ItemGroup;
-import hudson.model.AbstractBuild;
-import hudson.security.ACL;
-import hudson.util.FormValidation;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -26,8 +20,15 @@ import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
-import com.ibm.team.git.build.hjplugin.InvalidCredentialsException;
 
+import hudson.Util;
+import hudson.model.Job;
+import hudson.security.ACL;
+import hudson.util.FormValidation;
+
+/**
+ * Represents login information to connect to RTC
+ */
 public class RTCLoginInfo {
 	private static final Logger LOGGER = Logger.getLogger(RTCGitBuilder.class.getName());
 	
@@ -36,7 +37,16 @@ public class RTCLoginInfo {
 	private String password;
 	private int timeout;
 	
-	public RTCLoginInfo(AbstractBuild<?, ?> build, String serverUri, String credentialsId, int timeout) throws InvalidCredentialsException {
+	/**
+	 * Constructor 
+	 * 
+	 * @param job
+	 * @param serverUri
+	 * @param credentialsId
+	 * @param timeout
+	 * @throws InvalidCredentialsException
+	 */
+	public RTCLoginInfo(Job<?, ?> job, String serverUri, String credentialsId, int timeout) throws InvalidCredentialsException {
 		credentialsId = Util.fixEmptyAndTrim(credentialsId);
 
 		if (credentialsId != null) {
@@ -45,12 +55,12 @@ public class RTCLoginInfo {
 				LOGGER.finer("Looking up credentials for " +  //$NON-NLS-1$
 						"credentialId=\"" + credentialsId + //$NON-NLS-1$
 						"\" serverURI=\"" + serverUri +  //$NON-NLS-1$
-						"\" project=" + (build == null ? "null" : "\"" + build.getFullDisplayName() + "\"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ $NON-NLS-2$ $NON-NLS-3$ $NON-NLS-4$ 
+						"\" project=" + (job == null ? "null" : "\"" + job.getFullDisplayName() + "\"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ $NON-NLS-2$ $NON-NLS-3$ $NON-NLS-4$ 
 			}
 
 			
-			ItemGroup project = build != null && build.getProject() instanceof ItemGroup ? (ItemGroup)build.getProject() : null;
-			List<StandardUsernamePasswordCredentials> allMatchingCredentials = CredentialsProvider.lookupCredentials(StandardUsernamePasswordCredentials.class, project , ACL.SYSTEM,
+			
+			List<StandardUsernamePasswordCredentials> allMatchingCredentials = CredentialsProvider.lookupCredentials(StandardUsernamePasswordCredentials.class, job , ACL.SYSTEM,
 							URIRequirementBuilder.fromUri(serverUri).build());
 			StandardUsernamePasswordCredentials credentials = CredentialsMatchers.firstOrNull(allMatchingCredentials, 
 							CredentialsMatchers.withId(credentialsId));
@@ -84,6 +94,13 @@ public class RTCLoginInfo {
 		return timeout;
 	}
 	
+	/**
+	 * Validate the given credentials against the server
+	 * 
+	 * @param credentialsId
+	 * @param timeout
+	 * @return
+	 */
 	public static FormValidation basicValidate(String credentialsId, String timeout) {
 		// validate the timeout value
 		FormValidation result = validateTimeout(timeout);
@@ -97,6 +114,9 @@ public class RTCLoginInfo {
 	/**
 	 * Validate the timeout
 	 * Must be a positive integer
+	 * 
+	 * @param timeout Timeout to use when connecting to a RTC server
+	 * @return An error if the input is valid. 
 	 */
 	public static FormValidation validateTimeout(String timeout) {
 		timeout = Util.fixEmptyAndTrim(timeout);
@@ -108,8 +128,11 @@ public class RTCLoginInfo {
 	}
 
 	/**
-	 * Validate the credentials id
-	 * We want credentials id if no auth given
+	 * Validate the credentials id 
+	 * 
+	 * @param credentialsId 
+	 * @return 
+	 * 
 	 */
 	public static FormValidation validateCredentials(String credentialsId) {
 		credentialsId = Util.fixEmptyAndTrim(credentialsId);

@@ -69,9 +69,34 @@ public class CommiDataTests {
 		Assert.assertTrue(wi[3].equals(result[3]));
 	}
 	
+
+	/**
+	 * Test multi line comment with the following work item keywords
+	 * bug, task, rtcwi and work item
+	 */
+	@Test
+	public void testWorkItemInCommitComment4() {
+		String[] wi = new String[] { "1", "2", "3", "4" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		StringBuffer multiComment = new StringBuffer();
+		multiComment.append("test workitems in multiple lines"); //$NON-NLS-1$
+		multiComment.append(System.getProperty("line.separator")); //$NON-NLS-1$
+		multiComment.append(String.format("bug %s; rtcwi %s",wi[0], wi[1])); //$NON-NLS-1$
+		multiComment.append(System.getProperty("line.separator")); //$NON-NLS-1$
+		multiComment.append(String.format("task %s: work item %s;", wi[2], wi[3])); //$NON-NLS-1$
+		multiComment.append(System.getProperty("line.separator")); //$NON-NLS-1$
+		//System.out.print(multiComment.toString());
+		String[] result = getWorkItemsFromCommitComment(multiComment.toString());
+		Assert.assertNotNull(result);
+		Assert.assertTrue(result.length == wi.length);
+		Assert.assertTrue(wi[0].equals(result[0]));
+		Assert.assertTrue(wi[1].equals(result[1]));
+		Assert.assertTrue(wi[2].equals(result[2]));
+		Assert.assertTrue(wi[3].equals(result[3]));
+	}
+	
 	@Test
 	public void testNoWorkItemInCommitComment1() {
-		String comment = "bug a defect b task c workitem d";
+		String comment = "bug a defect b task c workitem d"; //$NON-NLS-1$
 		String[] result = getWorkItemsFromCommitComment(comment);
 		Assert.assertTrue(result != null && result.length == 0);
 	}

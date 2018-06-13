@@ -1,11 +1,13 @@
 /******************************************************************************
- * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2011, 2015. All Rights Reserved.
- * 
- * Note to U.S. Government Users Restricted Rights:
- * Use, duplication or disclosure restricted by GSA ADP Schedule
- * Contract with IBM Corp.
- ******************************************************************************/
+ * Copyright (c) 2013, 2018 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 
 package com.ibm.team.git.build.hjplugin.http;
 
@@ -80,8 +82,8 @@ import com.ibm.team.git.build.hjplugin.RtcJsonUtil;
 
 /**
  * Collection of methods to handle authentication and providing the response
- * back. For a GET, the caller supplies uri and gets JSON back. For a PUT, the
- * caller supplies uri & any stream data.
+ * back. For a GET, the caller supplies URI and gets JSON back. For a PUT, the
+ * caller supplies URI &amp; any stream data.
  */
 public class HttpUtils {
 
@@ -188,7 +190,7 @@ public class HttpUtils {
 			httpContext = createHttpContext();
 		}
 		
-		LOGGER.finer("POST: " + request.getURI()); //$NON-NLS-1$
+		LOGGER.info("POST: " + request.getURI()); //$NON-NLS-1$
 		CloseableHttpResponse response = httpClient.execute(request,
 				httpContext);
 		try {
@@ -219,17 +221,19 @@ public class HttpUtils {
 					try {
 						inputStream.close();
 					} catch (IOException e) {
-						LOGGER.finer("Failed to close the result input stream for request: " + fullURI); //$NON-NLS-1$
+						LOGGER.log(Level.WARNING, 
+								String.format("Failed to close the result input stream for request: %s", fullURI) //$NON-NLS-1$
+								, e); 
 					}
 				}
 			} else if (statusCode == 401) {
 				// if still un-authorized, then there is a good chance the basic
 				// credentials are bad.
-				throw new InvalidCredentialsException("authentication_failed");
+				throw new InvalidCredentialsException(Messages.HttpUtils_authentication_failed(userId, serverURI));
 
 			} else {
 				// capture details about the error
-				LOGGER.finer(Messages.HttpUtils_POST_failed(fullURI, statusCode));
+				LOGGER.warning(Messages.HttpUtils_POST_failed(fullURI, statusCode));
 				if (listener != null) {
 					listener.fatalError(Messages.HttpUtils_POST_failed(fullURI, statusCode));
 				}
@@ -299,12 +303,16 @@ public class HttpUtils {
 				response = httpClient.execute(request, httpContext);
 			}
 			int statusCode = response.getStatusLine().getStatusCode();
+			if (LOGGER.isLoggable(Level.INFO)) {
+				LOGGER.info("Status code " + statusCode + " for URI "+ fullURI); //$NON-NLS-1$ //$NON-NLS-2$
+			}
 
 			if (statusCode == 200) {
 				InputStreamReader inputStream = new InputStreamReader(response
 						.getEntity().getContent(), UTF_8);
 				try {
 					String responseContent = IOUtils.toString(inputStream);
+					LOGGER.info("Response " + responseContent + " for URI "+ fullURI); //$NON-NLS-1$ //$NON-NLS-2$
 					RtcHttpResult result = new RtcHttpResult(httpContext,
 							JSONSerializer.toJSON(responseContent));
 					return result;
@@ -312,17 +320,19 @@ public class HttpUtils {
 					try {
 						inputStream.close();
 					} catch (IOException e) {
-						LOGGER.finer("Failed to close the result input stream for request: " + fullURI); //$NON-NLS-1$
+						LOGGER.log(Level.WARNING, 
+								String.format("Failed to close the result input stream for request: %s", fullURI) //$NON-NLS-1$
+								, e);
 					}
 				}
 			} else if (statusCode == 401) {
 				// if still un-authorized, then there is a good chance the basic
 				// credentials are bad.
-				throw new InvalidCredentialsException("authentication_failed");
+				throw new InvalidCredentialsException(Messages.HttpUtils_authentication_failed(userId, serverURI));
 
 			} else {
 				// capture details about the error
-				LOGGER.finer(Messages.HttpUtils_GET_failed(fullURI, statusCode));
+				LOGGER.warning(Messages.HttpUtils_GET_failed(fullURI, statusCode));
 				if (listener != null) {
 					listener.fatalError(Messages.HttpUtils_GET_failed(fullURI, statusCode));
 				}
@@ -444,8 +454,6 @@ public class HttpUtils {
 	 *            The password to authenticate with
 	 * @param timeout
 	 *            The timeout period for the connection (in seconds)
-	 * @return The HttpContext to be used in a series of requests (so we only
-	 *         need to login once).
 	 * @throws IOException
 	 *             Thrown if things go wrong
 	 * @throws InvalidCredentialsException
@@ -457,15 +465,12 @@ public class HttpUtils {
 			GeneralSecurityException, InvalidCredentialsException {
 		// We can't directly do a post because we need a JSession id cookie.
 		// Instead attempt to do a get and then verify the credentials when we
-		// need to do
-		// the form based auth. Don't bother to re-issue the get though. We just
-		// want
-		// to know if the Login works
-
+		// need to do the form based auth. Don't bother to re-issue the get though. We just
+		// want to know if the Login works
 		CloseableHttpClient httpClient = getClient();
 		HttpGet request = getGET(serverURI, timeout);
 		if(httpContext == null) {
-		 httpContext = createHttpContext();
+			httpContext = createHttpContext();
 		}
 		
 		LOGGER.finer("GET: " + request.getURI()); //$NON-NLS-1$
@@ -647,26 +652,22 @@ public class HttpUtils {
 					sslContext, new X509HostnameVerifier() {
 
 						public boolean verify(String arg0, SSLSession arg1) {
-							// TODO Auto-generated method stub
 							return true;
 						}
 
 						public void verify(String host, SSLSocket ssl)
 								throws IOException {
-							// TODO Auto-generated method stub
-
+							// Not implemented
 						}
 
 						public void verify(String host, X509Certificate cert)
 								throws SSLException {
-							// TODO Auto-generated method stub
-
+							// Not implemented
 						}
 
 						public void verify(String host, String[] cns,
 								String[] subjectAlts) throws SSLException {
-							// TODO Auto-generated method stub
-
+							// Not implemented
 						}
 					});
 		}
@@ -869,16 +870,16 @@ public class HttpUtils {
 			InvalidCredentialsException {
 
 		// The server requires an authentication: Create the login form
-		String fullURI = getFullURI(serverURI, "/j_security_check");
+		String fullURI = getFullURI(serverURI, "/j_security_check"); //$NON-NLS-1$
 		List<NameValuePair> nvps = new ArrayList<NameValuePair>();
 		nvps.add(new BasicNameValuePair("j_username", userId)); //$NON-NLS-1$
 		nvps.add(new BasicNameValuePair("j_password", password)); //$NON-NLS-1$
 
-		HttpPost formPost = getPOST(fullURI, timeout); //$NON-NLS-1$
+		HttpPost formPost = getPOST(fullURI, timeout);
 		formPost.setEntity(new UrlEncodedFormEntity(nvps, UTF_8));
 
 		// The client submits the login form
-		LOGGER.finer("POST: " + formPost.getURI()); //$NON-NLS-1$
+		LOGGER.info("POST: " + formPost.getURI()); //$NON-NLS-1$
 		//HttpClientContext authContext = createHttpContext();
 		CloseableHttpResponse formResponse = httpClient.execute(formPost,
 				httpContext);
@@ -961,7 +962,7 @@ public class HttpUtils {
 		} catch (IOException e) {
 			// we don't care we are logged in or are throwing an exception for a
 			// different problem
-			LOGGER.log(Level.FINER, "Failed to close response", e);
+			LOGGER.log(Level.FINER, "Failed to close response", e); //$NON-NLS-1$
 		}
 	}
 
@@ -1013,7 +1014,7 @@ public class HttpUtils {
 			if (entity == null)
 				return;
 
-			StringBuffer logMessage = new StringBuffer("Response Body:");
+			StringBuffer logMessage = new StringBuffer("Response Body:"); //$NON-NLS-1$
 			BufferedReader reader = null;
 			try {
 				reader = new BufferedReader(new InputStreamReader(

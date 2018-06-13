@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corporation and others.
+ * Copyright (c) 2014, 2018 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -41,5 +41,5 @@ public class RTCHttpConstants {
 	
 	public static final String WI_FRAGMENT = "resource/itemName/com.ibm.team.workitem.WorkItem/"; //$NON-NLS-1$
 	public static final String BUILD_RESULT_UUID = "buildResultUUID"; //$NON-NLS-1$
-	public static final String BUILD_RESULT_ITEM_OID = "resource/itemOid/com.ibm.team.build.BuildResult/";
+	public static final String BUILD_RESULT_ITEM_OID = "resource/itemOid/com.ibm.team.build.BuildResult/"; //$NON-NLS-1$
 }

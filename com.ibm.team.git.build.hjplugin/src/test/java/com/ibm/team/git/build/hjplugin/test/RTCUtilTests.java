@@ -111,6 +111,12 @@ public class RTCUtilTests {
 		
 		comment = "test DEFect";
 		Assert.assertTrue(RTCUtils.matchesKey(comment));
+		
+		comment = "test abcd rtcwi";
+		Assert.assertTrue(RTCUtils.matchesKey(comment));
+		
+		comment = "test abcd work item";
+		Assert.assertTrue(RTCUtils.matchesKey(comment));
 	}
 	
 	@Test
@@ -136,5 +142,4 @@ public class RTCUtilTests {
 		Assert.assertTrue("CL".equals(RTCUtils.getWiMode("withCommentAndLink")));
 		Assert.assertTrue("CL".equals(RTCUtils.getWiMode("WITHCommentANDLINK")));
 	}
-	
 }
