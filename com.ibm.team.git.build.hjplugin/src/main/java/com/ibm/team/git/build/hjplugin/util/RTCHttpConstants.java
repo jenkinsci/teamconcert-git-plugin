@@ -16,7 +16,7 @@ public class RTCHttpConstants {
      * URI for checking compatibility of the RTC server. We need 5.0 or higher in order to
      * use the Rest services.
      */
-    public static final String URI_COMPATIBILITY_CHECK = "versionCompatibility?clientVersion=5.0.2"; //$NON-NLS-1$
+    public static final String URI_COMPATIBILITY_CHECK = "versionCompatibility?clientVersion=6.0"; //$NON-NLS-1$
     
     //rtc service url's
 	public static final String SERVICE_GITBUILD_LINK = "service/com.ibm.team.git.common.internal.IGitBuildLinkRestService/LinkBuild"; //$NON-NLS-1$
