@@ -25,14 +25,14 @@
   
   <name>Team Concert Git Plugin</name>
   <description>Integrates Jenkins with Rational Team Concert for Jenkins Builds which use Git as source control. This plugin will create tracebility links from a Jenkins build to RTC work items and build result.</description>
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Team+Concert+Git+Plugin</url>
+  <url>https://github.com/jenkinsci/teamconcert-git-plugin</url>
   
   <licenses>
 		<license>
 			<name>Eclipse Public License v1.0</name>
 			<comments>
 				/*******************************************************************************
-				 * Copyright (c) 2014, 2017 IBM Corporation and others.
+				 * Copyright (c) 2014, 2020 IBM Corporation and others.
 				 * All rights reserved. This program and the accompanying materials
 				 * are made available under the terms of the Eclipse Public License v1.0
 				 * which accompanies this distribution, and is available at
@@ -107,7 +107,7 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
-			<version>4.3.3</version>
+			<version>4.5.6</version>
 		</dependency>
 		<dependency>
   		<groupId>org.slf4j</groupId>
@@ -121,7 +121,7 @@
 			<type>hpi</type>
 		</dependency>
   </dependencies>
-	
+  
     <build>
 		<plugins>
 			<plugin>
@@ -151,7 +151,7 @@
                </dependency>
               </dependencies>
             </plugin>
-        
+        	
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>

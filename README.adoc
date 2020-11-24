@@ -4,6 +4,9 @@ Team Concert Git Plugin
 :toc-placement: preamble
 :toclevels: 4
 
+// Reference - See the following page for adding new images
+// https://www.jenkins.io/doc/developer/publishing/wiki-page/
+
 [.conf-macro .output-inline]#Integrates Jenkins with
 https://jazz.net/products/rational-team-concert/[Rational Team
 Concert] for Jenkins Builds which use Git as source control. This plugin
