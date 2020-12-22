@@ -21,7 +21,7 @@ current RTC features and workflows that users are already familiar with
 such as, emails, toaster popups, reporting, dashboards, etc.
 
 === Product Name Change
-As of 7.0 release, Rational Team Concert is now called Engineering Workflow Management. Team Concert Plugin supports RTC releases 6.0 to 6.0.6.1 and EWM releases 7.0 to 7.0.1. In this documentation, wherever you find Rational Team Concert(RTC), you can substitute it with Engineering Workflow Management (EWM).
+As of 7.0 release, Rational Team Concert is now called Engineering Workflow Management. Team Concert Plugin supports RTC releases 6.0 to 6.0.6.1 and EWM releases 7.0 to 7.0.2. In this documentation, wherever you find Rational Team Concert(RTC), you can substitute it with Engineering Workflow Management (EWM).
 
 [[TeamConcertGitPlugin-Documentation]]
 == Documentation
@@ -185,11 +185,21 @@ plugin.  The log will help to identify the problem.
 [[TeamConcertGitPlugin-Changelog]]
 == Change log
 
-[[TeamConcertGitPlugin-2.0.0July17,2020]]
+[[TeamConcertGitPlugin-2.0.2Dec15,2020]]
+=== 2.0.2 December 15, 2020
+* Support for SAML/OIDC app password - Work Item 511950
+
+GitHub commit link -
+https://github.com/jenkinsci/teamconcert-git-plugin/commit/[56e3d95]
+
+[[TeamConcertGitPlugin-2.0.1July17,2020]]
 === 2.0.1 July 17, 2020
 * Upgrade to Jenkins 2.60.1
 * Upgrade to Java 8
 * Drop support for RTC 5.x releases.
+
+GitHub commit link -
+https://github.com/jenkinsci/teamconcert-git-plugin/commit/[9b333d]
 
 [[TeamConcertGitPlugin-2.0.0June15,2018]]
 === 2.0.0 June 15, 2018
