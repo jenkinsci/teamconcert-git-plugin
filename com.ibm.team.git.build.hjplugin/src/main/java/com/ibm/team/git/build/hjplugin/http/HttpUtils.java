@@ -1191,7 +1191,6 @@ public class HttpUtils {
 	         noPromptAuthorizationRequest.setHeader(HTTP.USER_AGENT, newUserAgent);
 	         noPromptAuthorizationRequest.setHeader("Accept", TEXT_JSON);
 	         noPromptAuthorizationRequest.setHeader("Accept-Charset", UTF_8);
-	         LOGGER.finer("OIDC Authorization uri with prompt is none : " + noPromptAuthorizationRequest.getURI());
 	         
 	         // This request will fail if this client is connecting for the first time. It may succeed
 	         // if an OP session is already in place in which case some previous level-setting had already been done
