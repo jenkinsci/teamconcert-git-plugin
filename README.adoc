@@ -186,7 +186,7 @@ plugin.  The log will help to identify the problem.
 == Change log
 
 [[TeamConcertGitPlugin-2.0.2Dec15,2020]]
-=== 2.0.2 December 15, 2020
+=== 2.0.2 December 22, 2020
 * Support for SAML/OIDC app password - Work Item 511950
 
 GitHub commit link -
