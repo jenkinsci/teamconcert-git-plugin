@@ -1,12 +1,29 @@
 <?jelly escape-by-default='true'?>
-<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:c="/lib/credentials">
+<!--
+/*******************************************************************************
+ * Copyright © 2014, 2021 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Eclipse Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/epl-v10.html
+ *
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+-->
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form" xmlns:c="/lib/credentials"
+	 xmlns:tds="tableDivSelector">
   <!--
     This jelly script is used for per-project configuration.
 
     See global.jelly for a general discussion about jelly script.
   -->
+  <j:include uri="tableDivSelector.jelly"/>
   <f:block>
-      <table width="100%">
+      	<!--
+			See tableDivSelector.jelly for more details on blockWrapper
+		-->
+        <tds:blockWrapper>
             <f:entry title="${%serverURI.title}"  field="serverURI" >
                 <f:textbox name="serverURI" clazz="required" checkMessage="${%serverURI.checkMessage}" />
             </f:entry>
@@ -19,9 +36,7 @@
             </f:entry>
         
             <f:validateButton title="${%checkJobConnection.title}" progress="${%checkJobConnection.progress}" 
-               method="checkJobConnection" with="serverURI,credentialsId,timeout" />
-               
-            
+               method="checkJobConnection" with="serverURI,credentialsId,timeout" />           
 	        
 	        <f:optionalBlock title="${%jenkinsRootURI.type}" name="jenkinsRootURIOverride" field="jenkinsRootURIOverride" checked="${instance.jenkinsRootURIOverride}" inline="true">
 			    <f:entry title="${%jenkinsRootURI.title}"  field="jenkinsRootURI" >
@@ -81,7 +96,7 @@
             </f:optionalBlock>
 		    
 		    
-	    </table>
+	    </tds:blockWrapper>
   </f:block>
   
   
