@@ -56,16 +56,12 @@ Integration features in Rational Team Concert]
 [[TeamConcertGitPlugin-Jenkins]]
 ==== Jenkins
 
-* This plugin requires http://git-scm.com/[Git] to be the Source Code
-Management system and works for _freestyle software and
-pipeline_ projects which
-use http://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin[Git Client
-plugin] for accessing the http://git-scm.com/[Git] source repository.
+* This plugin requires http://git-scm.com/[Git] to be the Source Code Management system and works for _freestyle software and pipeline_ projects which use http://wiki.jenkins-ci.org/display/JENKINS/Git+Plugin[Git Clientplugin] for accessing the http://git-scm.com/[Git] source repository.
 * Java 8 and above.
 * Freestyle projects +
-** Jenkins version 2.60.1 and above
+** Jenkins version 2.60.1 and above. Jenkins 2.277.1 LTS has been tested with the latest release.
 * Pipeline projects  +
-** Jenkins version 2.60.1 and above, Pipeline job plugin 2.11 and above 
+** Jenkins version 2.60.1 and above, Pipeline job plugin 2.11 and above. Jenkins 2.277.1 LTS has been tested with the latest release.
 
 === RTC
 
@@ -187,7 +183,8 @@ plugin.  The log will help to identify the problem.
 
 [[TeamConcertGitPlugin-2.0.3Mar30,2021]]
 === 2.0.3 March 30, 2021
-* Compatibility update for Jenkins' table to div migration.  https://jazz.net/jazz/resource/itemName/com.ibm.team.workitem.WorkItem/524133[524133:Adoption - tables to divs migration for Team Concert Git Plugin]
+*  Compatibility update for Jenkins 2.277.1 LTS.  https://jazz.net/jazz/resource/itemName/com.ibm.team.workitem.WorkItem/524133[524133:Adoption - tables to divs migration for Team Concert Git Plugin]
+Note: Team Concert Git Plugin continues to support LTS versions starting from 2.60.1
 
 [[TeamConcertGitPlugin-2.0.2Dec15,2020]]
 === 2.0.2 December 22, 2020
