@@ -187,8 +187,7 @@ plugin.  The log will help to identify the problem.
 
 [[TeamConcertGitPlugin-2.0.3Mar30,2021]]
 === 2.0.3 March 30, 2021
-* table to div migration support. Work item 524133.
-
+* Compatibility update for Jenkins' table to div migration.  https://jazz.net/jazz/resource/itemName/com.ibm.team.workitem.WorkItem/524133[524133:Adoption - tables to divs migration for Team Concert Git Plugin]
 
 [[TeamConcertGitPlugin-2.0.2Dec15,2020]]
 === 2.0.2 December 22, 2020
