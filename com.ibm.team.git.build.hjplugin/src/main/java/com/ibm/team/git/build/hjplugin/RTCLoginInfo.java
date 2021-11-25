@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2018 IBM Corporation and others.
+ * Copyright (c) 2014, 2021 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,6 +23,7 @@ import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 
 import hudson.Util;
 import hudson.model.Job;
+import hudson.model.Run;
 import hudson.security.ACL;
 import hudson.util.FormValidation;
 
@@ -73,6 +74,36 @@ public class RTCLoginInfo {
 			
 		} else {
 			throw new InvalidCredentialsException(Messages.RTCLoginInfo_supply_credenmtials());
+		}
+		this.serverUri = serverUri;
+		this.timeout = timeout;
+	}
+	
+	public RTCLoginInfo(Run<?, ?> build, String serverUri, String credentialsId, int timeout) throws InvalidCredentialsException {
+		credentialsId = Util.fixEmptyAndTrim(credentialsId);
+
+		if (credentialsId != null) {
+			// figure out userid & password from the credentials
+			if (LOGGER.isLoggable(Level.FINER)) {
+				LOGGER.finer("Looking up credentials for " +  //$NON-NLS-1$
+						"credentialId=\"" + credentialsId + //$NON-NLS-1$
+						"\" serverURI=\"" + serverUri +  //$NON-NLS-1$
+						"\" project=" + (build.getParent() == null ? "null" : "\"" + build.getParent().getFullDisplayName() + "\"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ $NON-NLS-2$ $NON-NLS-3$ $NON-NLS-4$ 
+			}
+
+			
+			StandardUsernamePasswordCredentials credentials = CredentialsProvider.findCredentialById(credentialsId, StandardUsernamePasswordCredentials.class, build, URIRequirementBuilder.fromUri(serverUri).build());
+			
+			if (credentials != null) {
+				this.userId = credentials.getUsername();
+				this.password = credentials.getPassword().getPlainText();
+				CredentialsProvider.track(build, credentials);
+			} else {
+				throw new InvalidCredentialsException(Messages.RTCLoginInfo_creds_unresolvable());
+			}
+			
+		} else {
+			throw new InvalidCredentialsException(Messages.RTCLoginInfo_missing_creds());
 		}
 		this.serverUri = serverUri;
 		this.timeout = timeout;

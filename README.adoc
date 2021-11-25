@@ -45,8 +45,6 @@ items with Git commits.
 
 . https://jazz.net/help-dev/clm/index.jsp?re=1&topic=/com.ibm.team.connector.cq.doc/topics/c_integ_git.html[Integrating
 Rational Team Concert and Git]
-. https://jazz.net/library/article/1426[Setup for using Git Integration
-features of Rational Team Concert]
 . https://jazz.net/library/article/1423[Understanding the Git
 Integration features in Rational Team Concert]
 

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2018 IBM Corporation and others.
+ * Copyright (c) 2014, 2021 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -45,6 +45,8 @@ import hudson.FilePath;
 import hudson.Launcher;
 import hudson.Util;
 import hudson.model.AbstractProject;
+import hudson.model.FreeStyleProject;
+import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.security.ACL;
@@ -75,6 +77,8 @@ public class RTCGitBuilder extends Builder implements SimpleBuildStep {
 	private boolean useWorkItems = false;
 	private boolean useTrackBuildWorkItem = false;
 	
+	private BuildParameterAction buildParameterAction;
+	
 	// Fields in config.jelly must match the parameter names in the
 	// "DataBoundConstructor"
 	@Deprecated
@@ -86,7 +90,7 @@ public class RTCGitBuilder extends Builder implements SimpleBuildStep {
 			int trackBuildWorkItem) {
 		this(serverURI, credentialsId, timeout, jenkinsRootURIOverride, jenkinsRootURI, useBuildDefinition, 
 				buildDefinition, annotateChangeLog, useWorkItems, workItemUpdateType, 
-				useTrackBuildWorkItem, Integer.toString(trackBuildWorkItem));
+				useTrackBuildWorkItem, Integer.toString(trackBuildWorkItem));	
 	}
 		
 	@Deprecated
@@ -117,7 +121,15 @@ public class RTCGitBuilder extends Builder implements SimpleBuildStep {
 		this.serverURI = serverURI;
 		this.credentialsId = credentialsId;
 		this.annotateChangeLog = annotateChangeLog;
-		this.ownsBuildCycle = false;
+		this.ownsBuildCycle = false;	
+	}
+		
+	public String getRtcBuildUUID() {
+		return rtcBuildUUID;
+	}
+	
+	public boolean getOwnsBuildCycle() {
+		return ownsBuildCycle;
 	}
 	
 	@DataBoundSetter
@@ -173,7 +185,7 @@ public class RTCGitBuilder extends Builder implements SimpleBuildStep {
 				this.jenkinsRootURI, logger);
 		String bURI = RTCUtils.getBuildURL(build, logger);
 		String buildName = RTCUtils.getBuildShortName(build, logger);
-		RTCLoginInfo loginInfo = getLoginInfo(build);
+		RTCLoginInfo loginInfo = getLoginInfo2(build);
 		// I shouldn't worry about the build result UUID unless there is build definition integration
 		// One more test case, start build from RTC but do not have build definition integration
 		if (this.useBuildDefinition) {
@@ -245,23 +257,31 @@ public class RTCGitBuilder extends Builder implements SimpleBuildStep {
 			LOGGER.info(String.format("Resolving track build work item %s", this.trackBuildWorkItem)); //$NON-NLS-1$
 			String resolvedTrackBuildWorkItem = Helper.resolveFieldParameterToValue(run, this.trackBuildWorkItem, listener);
 			LOGGER.info(String.format("Resolving track build work item %s", resolvedTrackBuildWorkItem)); //$NON-NLS-1$
-			BuildParameterAction bAction = new BuildParameterAction(credentialsId, timeout, serverURI,
-					rtcBuildUUID, ownsBuildCycle,
-					(useTrackBuildWorkItem ? resolvedTrackBuildWorkItem : null),
-					annotateChangeLog);
-			run.addAction(bAction);
+			
+			if(!(run.getParent() instanceof FreeStyleProject)) {
+				buildParameterAction = new BuildParameterAction(credentialsId, timeout, serverURI,
+						rtcBuildUUID, ownsBuildCycle,
+						(useTrackBuildWorkItem ? resolvedTrackBuildWorkItem : null),
+						annotateChangeLog);
+				
+				run.addAction(buildParameterAction);
+			}else 
+				buildParameterAction = getBuildParameterAction();
+			
 			String jRootURI = RTCUtils.getJenkinsRootURL(run,
 					this.jenkinsRootURI, logger);
 			String bURI = RTCUtils.getBuildURL(run, logger);
 			String buildName = RTCUtils.getBuildFullName(run, logger);
-			RTCLoginInfo loginInfo = getLoginInfo(run);
+			RTCLoginInfo loginInfo = getLoginInfo2(run);
 			RTCConnector rCon = new RTCConnector(serverURI,
 					loginInfo.getUserId(), loginInfo.getPassword(),
 					loginInfo.getTimeout(), buildDefinition,
 					workItemUpdateType, useBuildDefinition, rtcBuildUUID,
 					jRootURI, bURI, buildName, ownsBuildCycle);
+			
 			// First update the track Build work item 
 			// Use the resolved trackBuildWorkItem
+			if(!(run.getParent() instanceof FreeStyleProject)) {
 			rCon.updateWorkItem(listener.getLogger(),
 					resolvedTrackBuildWorkItem, RTCUtils
 					.getBuildStartedComment(listener
@@ -270,6 +290,7 @@ public class RTCGitBuilder extends Builder implements SimpleBuildStep {
 									logger), run
 							.getFullDisplayName(), null,
 							RTCUtils.getBuildUser(run)));
+		}
 			/**
 			 *  Note that multiple invocations of RTCGitBuilder will annotate the 
 			 *  work items over and over. Also, we will get all the work items in 
@@ -282,23 +303,31 @@ public class RTCGitBuilder extends Builder implements SimpleBuildStep {
 			 *  about the git commits that were processed by this invocation of 
 			 *  builder.
 			 */
+			
 			List<ChangeSetData> csData = getCsData(run, listener); 
 			String[] workItems = RTCUtils.getAllWorkItems(csData);
-			bAction.setWorkitems(workItems);
+			buildParameterAction.setWorkitems(workItems);
 			// Also add the unique change set details for this action
-			bAction.setChangeSetIds(getChangeSetIdsFromCsData(csData).toArray(new String[0]));
+			buildParameterAction.setChangeSetIds(getChangeSetIdsFromCsData(csData).toArray(new String[0]));
 			String format = String.format("work items are %s", Arrays.toString(workItems)); //$NON-NLS-1$
 			LOGGER.info(format);
 			rCon.publishCommitData(logger, csData, listener);
+			
 		}
 		catch (Exception e) {
 			LOGGER.log(Level.WARNING, "Error running RTCGitBuilder step", e); //$NON-NLS-1$
 		}
 	}
 
-	private RTCLoginInfo getLoginInfo(Run<?,?> build)
+	private RTCLoginInfo getLoginInfo(Job<?,?> job)
 			throws InvalidCredentialsException {
-		return new RTCLoginInfo(build.getParent(), getServerURI(), getCredentialsId(),
+		return new RTCLoginInfo(job, getServerURI(), getCredentialsId(),
+				getTimeout());
+	}
+	
+	private RTCLoginInfo getLoginInfo2(Run<?,?> build)
+			throws InvalidCredentialsException {
+		return new RTCLoginInfo(build, getServerURI(), getCredentialsId(),
 				getTimeout());
 	}
 
@@ -516,7 +545,7 @@ public class RTCGitBuilder extends Builder implements SimpleBuildStep {
 			}
 
 			try {
-				result.loginInfo = new RTCLoginInfo(null, serverURI, credId,
+				result.loginInfo = new RTCLoginInfo((Job<?, ?>)null, serverURI, credId,
 						Integer.parseInt(timeout));
 				result.validationResult = FormValidation.ok();
 			} catch (InvalidCredentialsException e) {
@@ -612,6 +641,14 @@ public class RTCGitBuilder extends Builder implements SimpleBuildStep {
 
 	public boolean getUseTrackBuildWorkItem() {
 		return this.useTrackBuildWorkItem;
+	}
+	
+	public void setBuildParameterAction(BuildParameterAction action) {
+		this.buildParameterAction = action;
+	}
+	
+	public BuildParameterAction getBuildParameterAction() {
+		return buildParameterAction;
 	}
 	
 	private static List<String> getChangeSetIdsFromActions(List<BuildParameterAction> actions) {
