@@ -76,43 +76,35 @@ existing project. +
 NOTE: Make sure Git is selected in the "Source Code Management" section
 and is configured correctly.
 . Find the "Build" section click on "Add Build Step" and select
-"Rational Team Concert(RTC) integration with Git"
-* [.confluence-embedded-file-wrapper]#image:https://wiki.jenkins.io/download/attachments/74416771/rtc_build_step.png?version=1&modificationDate=1413193734000&api=v2[image]# +
+"Rational Team Concert(RTC) integration with Git" +
 NOTE: It is recommended that you only add one instance of this RTC
 build step per Jenkins job and make sure the RTC build step is the first
 step to be executed.
 . Configuring the Rational Team Concert server connection
 .. To configure the Rational Team Concert server, enter the RTC
 connection settings and specify the credentials to use when logging into
-RTC for polling and linking.
-* [.confluence-embedded-file-wrapper]#image:https://wiki.jenkins.io/download/attachments/74416771/rtc_connection_step.png?version=1&modificationDate=1413194492000&api=v2[image]# +
+RTC for polling and linking. +
 NOTE: Credentials are managed by the https://wiki.jenkins-ci.org/display/JENKINS/Credentials+Plugin[Credentials plugin]. The Team Concert plugin supports username and password type credentials. Credentials can be defined within a domain or a folder (if
 you are using the folder's plugin).
 .. Click the "Test connection" button to verify the repository
 connection details.
-* [.confluence-embedded-file-wrapper]#image:https://wiki.jenkins.io/download/attachments/74416771/test_connection.png?version=1&modificationDate=1413194711000&api=v2[image]#
 . Specify the valid Jenkins URL to be used. This is a work around for
 the cases where the plugin programmatically cannot find the URL of the
 Jenkins instance. It is recommended that you provide this information to
 make sure that the tractability links get created correctly.
-* [.confluence-embedded-file-wrapper]#image:https://wiki.jenkins.io/download/attachments/74416771/jenkins_url.png?version=1&modificationDate=1413195471000&api=v2[image]#
 . To enable the integration between this plugin and RTC Build
 .. Enter a build definition ID.  See the
 https://jazz.net/help-dev/clm/index.jsp?re=1&topic=/com.ibm.team.build.doc/topics/c_hudson_overview.html&scope=null[Hudson/Jenkins
 build engine type] help topic to learn how to create a Jenkins build
 definition. Make sure the build definition created in RTC does not have
 any Source control option set.
-* [.confluence-embedded-file-wrapper]#image:https://wiki.jenkins.io/download/attachments/74416771/rtc_build_def.png?version=1&modificationDate=1413195988000&api=v2[image]#
 * Click the "Validate build definition" button to verify the RTC build
 definition exists.
-* [.confluence-embedded-file-wrapper]#image:https://wiki.jenkins.io/download/attachments/74416771/rtc_build_def_connection.png?version=1&modificationDate=1413196141000&api=v2[image]#
 . To annotate the change log with RTC work item links select the option
 "Annotate Change log with work items links"
-* [.confluence-embedded-file-wrapper]#image:https://wiki.jenkins.io/download/attachments/74416771/annotate_change_log.png?version=1&modificationDate=1413345006000&api=v2[image]#
 . To enable the integration between this plugin and RTC Work items
 enable the option "Enable RTC Work Item Integration" and in the drop
 down combo select the appropriate linking option
-* [.confluence-embedded-file-wrapper]#image:https://wiki.jenkins.io/download/attachments/74416771/workitem_links.png?version=1&modificationDate=1413345235000&api=v2[image]#
 . This plugin can update the status of the Jenkins build as comment in a
 RTC work item. To enable this
 .. Select the option "Update RTC Work Item with build status"
@@ -121,7 +113,6 @@ a Job parameter but, validation will not work.
 .. Click the "Validate Work Item" button to verify the RTC Work Item
 exists. +
  +
-[.confluence-embedded-file-wrapper]#image:https://wiki.jenkins.io/download/attachments/74416771/rtc_tbi.png?version=1&modificationDate=1413345472000&api=v2[image]#
 . Click the "Save" button to save the settings and return to the job
 page.
 
@@ -171,7 +162,6 @@ Log) and click the "Add new log recorder" button.
 . Name it something like "RTC Log" and click the "Add" button to add a
 logger.
 . Enter a logger of "com.ibm.team.git" and set the log level to "FINER".
-* [.confluence-embedded-file-wrapper]#image:https://wiki.jenkins.io/download/attachments/74416771/jenkins_configure_rtc_log.png?version=1&modificationDate=1413347257000&api=v2[image]#
 . Click the "Save" button.
 . Return to this log if a problem is ever experienced using this
 plugin.  The log will help to identify the problem.
