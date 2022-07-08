@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2021 IBM Corporation and others.
+ * Copyright (c) 2014, 2022 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -516,7 +516,24 @@ public class RTCGitBuilder extends Builder implements SimpleBuildStep {
 				JSON json = HttpUtils.performGet(serverURI, uri, userId,
 						password, timeout, null, null).getJson();
 				errorMessage = RtcJsonUtil.ensureCompatability(json);
-
+				
+				Boolean compatible = false;
+				String serverVersion = Util.fixEmptyAndTrim(RtcJsonUtil.getString(json, RtcJsonUtil.JSON_PROP_SERVER_VERSION));
+				if(serverVersion != null && RtcJsonUtil.HTTP_ERROR_MSG_VERSION_INCOMPATIBLE.equals(errorMessage))
+				{
+					String serverVersionWithoutMileStone = RtcJsonUtil.extractServerVersionWithoutMilestone(serverVersion);
+					if (serverVersionWithoutMileStone != null) {
+						boolean isServerVersionHigher = RtcJsonUtil.isServerVersionEqualOrHigher(serverVersionWithoutMileStone, RTCHttpConstants.MINIMUM_SERVER_VERSION);
+						if (isServerVersionHigher) {
+							JSON compatibilityCheckResult = HttpUtils.performGet(serverURI, RTCHttpConstants.URI_COMPATIBILITY_CHECK_WITHOUT_VERSION + serverVersion, userId,
+									password, timeout, null, null).getJson();
+							compatible = RtcJsonUtil.getBoolean(compatibilityCheckResult,
+									RtcJsonUtil.JSON_PROP_COMPATIBLE);
+							errorMessage = compatible != null && compatible == true ? null : errorMessage;
+						}
+					}
+				}
+				
 				if (errorMessage == null) {
 					// Make sure the credentials are good
 					HttpUtils.validateCredentials(serverURI, userId, password,

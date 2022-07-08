@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2018 IBM Corporation and others.
+ * Copyright (c) 2014, 2022 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -12,20 +12,28 @@
 package com.ibm.team.git.build.hjplugin;
 
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
+import hudson.Util;
 import net.sf.json.JSON;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import net.sf.json.JSONSerializer;
 
 public class RtcJsonUtil {
+	
+	private static final Logger LOGGER = Logger.getLogger(RtcJsonUtil.class.getName());
 
 	// JSON fields for #testConnection
-	private static final String JSON_PROP_COMPATIBLE = "compatible"; //$NON-NLS-1$
+	public static final String JSON_PROP_COMPATIBLE = "compatible"; //$NON-NLS-1$
 	private static final String JSON_PROP_IS_JTS = "isJTS"; //$NON-NLS-1$
-	private static final String JSON_PROP_SERVER_VERSION = "serverVersion"; //$NON-NLS-1$
+	public static final String JSON_PROP_SERVER_VERSION = "serverVersion"; //$NON-NLS-1$
 	private static final String JSON_PROP_MESSAGE = "message"; //$NON-NLS-1$
 	private static final String JSON_PROP_URI = "uri"; //$NON-NLS-1$
+	public static final String HTTP_ERROR_MSG_VERSION_INCOMPATIBLE = "Messages.RTCFacadeFacade_incompatible2(serverVersion)"; //$NON-NLS-1$
 	
 	public static String getReturnValue(String jsonStr) {
 		return getReturnValue(JSONSerializer.toJSON(jsonStr));
@@ -142,10 +150,92 @@ public class RtcJsonUtil {
 					|| (serverVersion == null)) { 
 				errorMessage = "Messages.RTCFacadeFacade_invalid_response_invoking_version_compatibility_service()"; //$NON-NLS-1$
 			} else {
-				errorMessage = "Messages.RTCFacadeFacade_incompatible2(serverVersion)"; //$NON-NLS-1$
+				errorMessage = HTTP_ERROR_MSG_VERSION_INCOMPATIBLE; //$NON-NLS-1$
 			}
 		}
 		return errorMessage;
+	}
+	
+	/**
+	 * This extracts the server version without the milestone.
+	 * 
+	 * @param serverVersion
+	 * @return the extracted server version without milestone identifiers (S1,M2,RC1 etc.,)
+	 * 
+	 * Note: This is protected for testing purposes
+	 */
+	protected static String extractServerVersionWithoutMilestone(String serverVersion) {
+		Pattern p = Pattern.compile("\\d\\.\\d(\\.\\d(\\.\\d)?)?");
+		Matcher m = p.matcher(serverVersion);
+		while (m.find()) {
+			return m.group();
+		}
+		return null;
+	}
+	
+	/**
+	 * Check if the serverVersion without milestone is greater than or equal to the minimum server 
+	 * version.
+	 * 
+	 * @param serverVersionWithoutMilestone -The server version without milestone
+	 * @param minimumServerVersion - The minimum server version.
+	 * @return - <code>true</code> if the server version is greater than or equal to minimum server 
+	 * 			version, <code>false</code> otherwise. 
+	 * 
+	 * Note: This is protected for testing purposes
+	 */
+	protected static boolean isServerVersionEqualOrHigher(String serverVersionWithoutMilestone, 
+						String minimumServerVersion) {
+		if (Util.fixEmptyAndTrim(serverVersionWithoutMilestone) == null 
+				|| Util.fixEmptyAndTrim(minimumServerVersion) == null) {
+			// This indicates invalid input but we already log the fact that 
+			// serverVersionWithoutMileStone was null before making this call
+			return false;
+		}
+		String [] serverFields = serverVersionWithoutMilestone.split("\\.");
+		String [] minimumServerFields = minimumServerVersion.split("\\.");
+		LOGGER.finest("EWM Client fields "  + Arrays.toString(minimumServerFields) +
+				"EWM Server fields " + Arrays.toString(serverFields));
+		Boolean isEqualOrGreater = null;
+		int i = 0, j=0;
+		while ( i < serverFields.length  && j < minimumServerFields.length) {
+			int sf = (int)serverFields[i].charAt(0);
+			int cf = (int)minimumServerFields[j].charAt(0);
+			if (sf > cf) {
+				isEqualOrGreater = Boolean.TRUE;
+				break;
+			} else if (sf < cf){
+				isEqualOrGreater = Boolean.FALSE;
+				break;
+			} else {
+				// Continue to the next digit
+				i++;
+				j++;
+			}
+		}
+		if (isEqualOrGreater == null) {
+			// The scenario is when the server version is a prefix of the client version 
+			// and client version is greater than the server 
+			// (or)
+			// The client version is a prefix of the server version and server version is greater 
+			// than the client 
+			// (or)
+			// The server and client are of the same version
+			if (serverFields.length < minimumServerFields.length) {
+				// Clearly the server version is smaller than the client version 
+				isEqualOrGreater = Boolean.FALSE;
+			}
+			else if (serverFields.length > minimumServerFields.length) {
+				// The server version is greater than minimum server version
+				isEqualOrGreater = Boolean.TRUE;
+			} else {
+				// Both strings are of equal length and server version is same as minimum 
+				// server version
+				isEqualOrGreater = Boolean.TRUE;
+			}
+		}
+		LOGGER.finest("Is server version greater than client ? " + isEqualOrGreater);
+		return isEqualOrGreater;
 	}
 
 }

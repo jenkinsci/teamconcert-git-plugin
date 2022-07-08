@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2018 IBM Corporation and others.
+ * Copyright (c) 2014, 2022 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -17,6 +17,8 @@ public class RTCHttpConstants {
      * use the Rest services.
      */
     public static final String URI_COMPATIBILITY_CHECK = "versionCompatibility?clientVersion=6.0"; //$NON-NLS-1$
+    public static final String URI_COMPATIBILITY_CHECK_WITHOUT_VERSION = "versionCompatibility?clientVersion="; //$NON-NLS-1$ 
+    public static final String MINIMUM_SERVER_VERSION = "6.0";
     
     //rtc service url's
 	public static final String SERVICE_GITBUILD_LINK = "service/com.ibm.team.git.common.internal.IGitBuildLinkRestService/LinkBuild"; //$NON-NLS-1$
