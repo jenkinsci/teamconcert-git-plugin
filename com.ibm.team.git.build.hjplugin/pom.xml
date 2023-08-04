@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright (c) 2014, 2021 IBM Corporation and others.
+    Copyright (c) 2014, 2023 IBM Corporation and others.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
   <parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>2.30</version>
+		<version>4.52</version>
   </parent>
   
   <groupId>org.jenkins-ci.plugins</groupId>
@@ -59,16 +59,16 @@
   
   
   <properties>
-    <!--  minimum Jenkins LTS version with Java 7 compatibility -->
-    <jenkins.version>2.60.1</jenkins.version>
+    <!--  minimum Jenkins LTS version with Java 11 compatibility -->
+    <jenkins.version>2.361.1</jenkins.version>
 	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	<project.build.outputEncoding>UTF-8</project.build.outputEncoding>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<java.level>8</java.level>
+	<java.level>11</java.level>
 	<maven.javadoc.skip>true</maven.javadoc.skip>
     <findbugs.skip>true</findbugs.skip>
-    <maven.compiler.source>1.8</maven.compiler.source>      
-    <maven.compiler.target>1.8</maven.compiler.target> 
+    <maven.compiler.source>11</maven.compiler.source>      
+    <maven.compiler.target>11</maven.compiler.target> 
   </properties>
   
   <scm>
