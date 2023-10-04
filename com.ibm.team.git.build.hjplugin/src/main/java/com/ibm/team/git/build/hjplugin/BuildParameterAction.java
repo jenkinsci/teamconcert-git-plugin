@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2018 IBM Corporation and others.
+ * Copyright (c) 2014, 2023 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -20,9 +20,9 @@ import hudson.model.InvisibleAction;
 public class BuildParameterAction extends InvisibleAction {
 	private static final String[] EMPTY_ARRAY = new String[0];
 	private final String rtcURL;
-	private final String rtcBuildUUID;
+	private  String rtcBuildUUID;
 	private final boolean shouldAnnotate;
-	private final boolean ownsBuildCycle;
+	private  boolean ownsBuildCycle;
 	private String credentialsId;
 	private String trackbuildwi;
 	private final int timeout;
@@ -87,6 +87,14 @@ public class BuildParameterAction extends InvisibleAction {
 	 */
 	public String getRtcBuildUUID() {
 		return rtcBuildUUID;
+	}
+	
+	public void setRtcBuildUUID(String rtcBuildUUID) {
+		this.rtcBuildUUID = rtcBuildUUID;
+	}
+	
+	public void setownsBuildCycle(boolean ownsBuildCycle) {
+		this.ownsBuildCycle = ownsBuildCycle;
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2022 IBM Corporation and others.
+ * Copyright (c) 2014, 2023 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -265,8 +265,11 @@ public class RTCGitBuilder extends Builder implements SimpleBuildStep {
 						annotateChangeLog);
 				
 				run.addAction(buildParameterAction);
-			}else 
+			}else {
 				buildParameterAction = getBuildParameterAction();
+				buildParameterAction.setRtcBuildUUID(rtcBuildUUID);
+				buildParameterAction.setownsBuildCycle(ownsBuildCycle);
+			}
 			
 			String jRootURI = RTCUtils.getJenkinsRootURL(run,
 					this.jenkinsRootURI, logger);
