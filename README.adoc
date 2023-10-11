@@ -169,6 +169,16 @@ plugin.  The log will help to identify the problem.
 [[TeamConcertGitPlugin-Changelog]]
 == Change log
 
+=== 2.0.4 October 06, 2023
+
+* Upgrade to Jenkins 2.361.1
+* Upgrade to Java 11
+* Usage of credentials used in the Jenkins job is now being recorded for tracking purposes
+* Jenkins build number will now be updated in the work item even in case of build failure, earlier work item was not updated. Currently, this is limited to Freestyle Job only
+* TLSv1.1 protocol is no longer supported in Team Concert Git Plugin. Users are encouraged to use TLSv1.3 or TLSv1.2 protocol.
+
+Note: Team Concert Git Plugin continues to support LTS versions starting from 2.361.1
+
 [[TeamConcertGitPlugin-2.0.3Mar30,2021]]
 === 2.0.3 March 30, 2021
 *  Compatibility update for Jenkins 2.277.1 LTS.  https://jazz.net/jazz/resource/itemName/com.ibm.team.workitem.WorkItem/524133[524133:Adoption - tables to divs migration for Team Concert Git Plugin]
