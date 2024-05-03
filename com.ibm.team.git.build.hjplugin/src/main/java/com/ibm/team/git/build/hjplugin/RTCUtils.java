@@ -1,12 +1,10 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2018 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
+ * Licensed Materials - Property of IBM
+ * (c) Copyright IBM Corporation 2014, 2024. All Rights Reserved.
+ * 
+ * Note to U.S. Government Users Restricted Rights:  Use,
+ * duplication or disclosure restricted by GSA ADP Schedule 
+ * Contract with IBM Corp.
  *******************************************************************************/
 
 package com.ibm.team.git.build.hjplugin;
@@ -28,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import jenkins.model.Jenkins;
 
@@ -48,8 +48,21 @@ public class RTCUtils {
 	private static String TASK_KEY = "task"; //$NON-NLS-1$
 	private static String DEFECT_KEY = "defect"; //$NON-NLS-1$
 	private static String WORKITEM_KEY = "workitem"; //$NON-NLS-1$
-	private static String WORKITEM_KEY_2 = "work item"; //$NON-NLS-1$
 	private static String RTCWI_KEY = "rtcwi"; //$NON-NLS-1$
+	
+	private static String WI_KEY = "wi"; //$NON-NLS-1$
+	private static String WORK_SPACE_ITEM_KEY = "work item"; //$NON-NLS-1$
+	private static String WORK_HYPHEN_ITEM_KEY = "work-item"; //$NON-NLS-1$
+	private static String ITEM_KEY = "item"; //$NON-NLS-1$
+	private static String ISSUE_KEY = "issue"; //$NON-NLS-1$
+	private static String FEATURE_KEY = "feature"; //$NON-NLS-1$
+	private static String EWM_KEY = "ewm"; //$NON-NLS-1$
+	private static String STORY_KEY = "story"; //$NON-NLS-1$
+	private static String EPIC_KEY = "epic"; //$NON-NLS-1$
+	private static String TESTPLAN_KEY = "testplan"; //$NON-NLS-1$
+	private static String TEST_SPACE_PLAN_KEY = "test plan"; //$NON-NLS-1$
+	private static String TEST_HYPHEN_PLAN_KEY = "test-plan"; //$NON-NLS-1$
+	private static String CCB_KEY = "ccb"; //$NON-NLS-1$
 
 	private static final String WI_MODE_COMMENTS = "C"; //$NON-NLS-1$
 	private static final String WI_MODE_LINKS = "L"; //$NON-NLS-1$
@@ -59,8 +72,9 @@ public class RTCUtils {
 	private static final String WI_MODE_LINKS_KEY = "withLink"; //$NON-NLS-1$
 	private static final String WI_MODE_LINKS_AND_COMMEMNTS_KEY = "withCommentAndLink"; //$NON-NLS-1$
 
-	private static List<String> KEYS = Arrays.asList(new String[] { BUG_KEY,
-			TASK_KEY, DEFECT_KEY, WORKITEM_KEY, RTCWI_KEY });
+	private static List<String> KEYS = Arrays.asList(new String[] { BUG_KEY, TASK_KEY, DEFECT_KEY, WORKITEM_KEY,
+			RTCWI_KEY, WI_KEY, WORK_SPACE_ITEM_KEY, WORK_HYPHEN_ITEM_KEY, ITEM_KEY, ISSUE_KEY, FEATURE_KEY, EWM_KEY,
+			STORY_KEY, EPIC_KEY, TESTPLAN_KEY, TEST_SPACE_PLAN_KEY, TEST_HYPHEN_PLAN_KEY, CCB_KEY });
 	private static List<Character> PCHARS = Arrays.asList(new Character[] {
 			',', ':', ';' });
 
@@ -209,17 +223,35 @@ public class RTCUtils {
 			// This enables us to support "work item" as a keyword
 			comment = comment.replaceAll("[Ww][Oo][Rr][Kk] [Ii][Tt][Ee][Mm]", WORKITEM_KEY); //$NON-NLS-1$
 		    LOGGER.info(" Comment after replacement " + comment); //$NON-NLS-1$
+		    
+			// Either hyphen (-), equal (=), colon (:), whitespace ( ), underscore (_), dot
+			// (.), comma (,), semi colon (;) or beginning of the line (^) should present
+			// before detecting keyword
+			final String BEFORE_KEYWORD_REGEX_PART = "(?<=-|=|:|\\s|_|\\.|,|;|^)";
 
-			String[] tokens = comment.split(" ");
-			int len = tokens.length;
-			for (int i = 0; i < len; i++) {
-				if (KEYS.contains(tokens[i].toLowerCase()) && i + 1 < len) {
-					String token = tokens[i + 1].trim();
-					if (PCHARS.contains(token.charAt(token.length() - 1))) {
-						token = token.substring(0, token.length() - 1);
-					}
-					wiList.add(token);
-				}
+			// Either hyphen (-), equal (=), colon (:), whitespace ( ), underscore (_), dot
+			// (.), comma (,) , semi colon (;) or end of the line ($) should present after
+			// detecting workitem number
+			final String AFTER_WI_ID_REGEX_PART = "(?:-|=|:|\\s|_|\\.|,|;|$)";
+
+			// Either hyphen (-), underscore (_), colon (:), equal (=) or whitespace ( ) can
+			// be used as a separator between keyword and workitem number
+			final String CHAR_BETWEEN_KEYWORD_AND_WORKITEM_NUMBER = "(?:-|_|:|=|\\s+)";
+
+			String wiSeperatedWithPipe = String.join("|", KEYS);
+
+			// Generated regex will look like
+			// (?<=-|=|:|\\s|_|\\.|,|;|^)(?:bug|task|defect|workitem|wi|rtcwi|work
+			// item|work-item|item|issue|feature|ewm|story|epic|testplan|test
+			// plan|test-plan|ccb)(?:-|_|:|=|\\s+)(\\d+)(?:-|=|:|\\s|_|\\.|,|;|$)
+			String pattern = BEFORE_KEYWORD_REGEX_PART + "(?:" + wiSeperatedWithPipe + ")"
+					+ CHAR_BETWEEN_KEYWORD_AND_WORKITEM_NUMBER + "(\\d+)" + AFTER_WI_ID_REGEX_PART;
+
+			Pattern compiledPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
+			Matcher matcher = compiledPattern.matcher(comment);
+
+			while (matcher.find()) {
+				wiList.add(matcher.group(1));
 			}
 		}
 		return wiList;
@@ -259,9 +291,12 @@ public class RTCUtils {
 	public static boolean matchesKey(String str) {
 		if (str != null) {
 			str = str.trim().toLowerCase();
-			return (str.endsWith(BUG_KEY) || str.endsWith(DEFECT_KEY)
-					|| str.endsWith(TASK_KEY) || str.endsWith(WORKITEM_KEY) || str.endsWith(RTCWI_KEY)
-					|| str.endsWith(WORKITEM_KEY_2));
+			return (str.endsWith(BUG_KEY) || str.endsWith(DEFECT_KEY) || str.endsWith(TASK_KEY)
+					|| str.endsWith(WORKITEM_KEY) || str.endsWith(RTCWI_KEY) || str.endsWith(WORK_SPACE_ITEM_KEY)
+					|| str.endsWith(WI_KEY) || str.endsWith(WORK_HYPHEN_ITEM_KEY) || str.endsWith(ITEM_KEY)
+					|| str.endsWith(ISSUE_KEY) || str.endsWith(FEATURE_KEY) || str.endsWith(EWM_KEY)
+					|| str.endsWith(STORY_KEY) || str.endsWith(EPIC_KEY) || str.endsWith(TESTPLAN_KEY)
+					|| str.endsWith(TEST_SPACE_PLAN_KEY) || str.endsWith(TEST_HYPHEN_PLAN_KEY) || str.endsWith(CCB_KEY));
 		}
 		return false;
 	}

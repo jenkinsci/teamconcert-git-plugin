@@ -1,16 +1,15 @@
 /*******************************************************************************
- * Copyright (c) 2014, 2018 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
+ * Licensed Materials - Property of IBM
+ * (c) Copyright IBM Corporation 2014,2024. All Rights Reserved.
+ * 
+ * Note to U.S. Government Users Restricted Rights:  Use,
+ * duplication or disclosure restricted by GSA ADP Schedule 
+ * Contract with IBM Corp.
  *******************************************************************************/
 package com.ibm.team.git.build.hjplugin;
 
 import hudson.Extension;
+import hudson.Functions;
 import hudson.MarkupText;
 import hudson.MarkupText.SubText;
 import hudson.model.Run;
@@ -24,15 +23,18 @@ import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+import com.ibm.team.git.build.hjplugin.http.HttpUtils;
 import com.ibm.team.git.build.hjplugin.scm.ChangeSetData;
 import com.ibm.team.git.build.hjplugin.scm.GitScmUtils;
 
 
 /**
- * Annotates the change log with RTC work item information 
- * if a work item reference is found.
+ * Annotates the change log with RTC work item information if a work item
+ * reference is found.
  * 
- * Valid work item keywords are bug, task, defect, rtcwi, work item and workitem
+ * Valid work item keywords are bug, task, defect, rtcwi, workitem, work item,
+ * work-item, item, issue, feature, ewm, story, epic, testplan, test plan,
+ * test-plan, ccb and wi.
  *
  */
 @Extension
@@ -168,21 +170,23 @@ public class RTCGitChangelogAnnotator extends ChangeLogAnnotator {
 			Integer key = null;
 			try {
 				key = getWorkItemId(token);
-				if (!RTCUtils.matchesKey(tStr.substring(0, token.start()))) {
+				if (!RTCUtils.matchesKey(tStr.substring(0, token.start() - 1))) {
 					continue;
 				}
 			} catch (Exception e) {
 				continue;
 			}
 			String toolTip = getWorkItemToolTip(wiMap, key.toString());
-			if (RTCUtils.IsNullOrEmpty(toolTip)) {
-				token.surroundWith(String.format("<a href='%s'>", //$NON-NLS-1$
-						RTCUtils.getWorkItemUrl(rtcURL, key.toString())),
-						"</a>"); //$NON-NLS-1$
-			} else {
-				token.surroundWith(String.format("<a href='%s' tooltip='%s'>", //$NON-NLS-1$
-						RTCUtils.getWorkItemUrl(rtcURL, key.toString()), toolTip),
-						"</a>"); //$NON-NLS-1$
+			String sanitizedRtcURL = Functions.htmlAttributeEscape(rtcURL);
+			if ((sanitizedRtcURL.startsWith(HttpUtils.SCHEME_HTTP) || sanitizedRtcURL.startsWith(HttpUtils.SCHEME_HTTPS))) {
+				if (RTCUtils.IsNullOrEmpty(toolTip)) {
+					token.surroundWith(String.format("<a href='%s'>", //$NON-NLS-1$
+					RTCUtils.getWorkItemUrl(sanitizedRtcURL, key.toString())), "</a>"); //$NON-NLS-1$
+				} else {
+					String sanitizedToolTip = Functions.htmlAttributeEscape(toolTip);
+					token.surroundWith(String.format("<a href='%s' tooltip='%s'>", //$NON-NLS-1$
+					RTCUtils.getWorkItemUrl(sanitizedRtcURL, key.toString()), sanitizedToolTip), "</a>"); //$NON-NLS-1$
+				}
 			}
 		}
 	}
