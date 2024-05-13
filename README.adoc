@@ -148,6 +148,21 @@ The following keywords are supported :
 * task
 * bug (deprecated)
 
+Following additional keywords are also supported starting version 2.0.5 of this plugin.
+
+* wi
+* work-item
+* item
+* issue
+* feature
+* ewm
+* story
+* epic
+* testplan
+* test plan
+* test-plan
+* ccb
+
 Note : We recommend using rtcwi keyword for referencing RTC work items
 in a commit comment.
 
@@ -168,6 +183,13 @@ plugin.  The log will help to identify the problem.
 
 [[TeamConcertGitPlugin-Changelog]]
 == Change log
+
+=== 2.0.5 May 08, 2024
+
+* Fixed a minor security vulnerability.
+* Added support for some more work item keywords. These are listed under the section https://plugins.jenkins.io/teamconcert-git/#plugin-content-supported-work-item-keywords[Supported work item keywords]
+
+Note: Team Concert Git Plugin continues to support LTS versions starting from 2.361.1
 
 === 2.0.4 October 06, 2023
 
