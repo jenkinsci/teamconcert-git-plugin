@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright (c) 2014, 2024 IBM Corporation and others.
+    Copyright (c) 2014, 2025 IBM Corporation and others.
     All rights reserved. This program and the accompanying materials
     are made available under the terms of the Eclipse Public License v1.0
     which accompanies this distribution, and is available at
@@ -15,7 +15,7 @@
   <parent>
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>4.52</version>
+		<version>5.0</version>
   </parent>
   
   <groupId>org.jenkins-ci.plugins</groupId>
@@ -32,7 +32,7 @@
 			<name>Eclipse Public License v1.0</name>
 			<comments>
 				/*******************************************************************************
-				 * Copyright (c) 2014, 2023 IBM Corporation and others.
+				 * Copyright (c) 2014, 2025 IBM Corporation and others.
 				 * All rights reserved. This program and the accompanying materials
 				 * are made available under the terms of the Eclipse Public License v1.0
 				 * which accompanies this distribution, and is available at
@@ -59,16 +59,16 @@
   
   
   <properties>
-    <!--  minimum Jenkins LTS version with Java 11 compatibility -->
-    <jenkins.version>2.361.1</jenkins.version>
+    <!--  minimum Jenkins LTS version with Java 17 compatibility -->
+    <jenkins.version>2.479.1</jenkins.version>
 	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	<project.build.outputEncoding>UTF-8</project.build.outputEncoding>
 	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	<java.level>11</java.level>
+	<java.level>17</java.level>
 	<maven.javadoc.skip>true</maven.javadoc.skip>
     <findbugs.skip>true</findbugs.skip>
-    <maven.compiler.source>11</maven.compiler.source>      
-    <maven.compiler.target>11</maven.compiler.target> 
+    <maven.compiler.source>17</maven.compiler.source>      
+    <maven.compiler.target>17</maven.compiler.target> 
   </properties>
   
   <scm>
@@ -88,12 +88,6 @@
   
   <dependencies>
 		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
 			<version>1.8.5</version>
@@ -102,7 +96,7 @@
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>credentials</artifactId>
-			<version>2.1.1</version>
+			<version>1447.v4cb_b_539b_5321</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -117,8 +111,13 @@
 		<dependency>
 			<groupId>org.jenkins-ci.plugins</groupId>
 			<artifactId>ssh-credentials</artifactId>
-			<version>1.9</version>
+			<version>355.v9b_e5b_cde5003</version>
 			<type>hpi</type>
+		</dependency>
+		<dependency>
+			<groupId>org.jenkins-ci.plugins</groupId>
+			<artifactId>bouncycastle-api</artifactId>
+			<version>2.30.1.79-254.vfdb_814e7791e</version>
 		</dependency>
   </dependencies>
   
