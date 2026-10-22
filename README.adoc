@@ -29,9 +29,9 @@ As of 7.0 release, Rational Team Concert is now called Engineering Workflow Mana
 [[TeamConcertGitPlugin-RationalTeamConcertHelpTopics]]
 === Rational Team Concert Help Topics
 
-. https://jazz.net/help-dev/clm/topic/com.ibm.team.build.doc/topics/t_build_overview.html[Rational
+. https://www.ibm.com/docs/en/engineering-lifecycle-management-suite/workflow-management/7.2.0?topic=SSUC3U_7.2/ewm/com.ibm.team.build.doc/topics/t_build_overview.html[Rational
 Team Concert Build Overview]
-. https://jazz.net/help-dev/clm/index.jsp?re=1&topic=/com.ibm.team.build.doc/topics/c_hudson_overview.html&scope=null[Hudson/Jenkins
+. https://www.ibm.com/docs/en/engineering-lifecycle-management-suite/workflow-management/7.2.0?topic=SSUC3U_7.2/ewm/com.ibm.team.build.doc/topics/c_hudson_overview.html[Hudson/Jenkins
 build engine type] (only if RTC Build integration is required).
 
 [[TeamConcertGitPlugin-WorkingwithRationalTeamConcertandGit]]
@@ -43,7 +43,7 @@ explain how you can use IBM Rational Team Concert to manage process
 enforcement for Git source control operations and to associate work
 items with Git commits.
 
-. https://jazz.net/help-dev/clm/index.jsp?re=1&topic=/com.ibm.team.connector.cq.doc/topics/c_integ_git.html[Integrating
+. https://www.ibm.com/docs/en/engineering-lifecycle-management-suite/workflow-management/7.2.0?topic=SSUC3U_7.2/ewm/com.ibm.team.connector.cq.doc/topics/c_integ_git.html[Integrating
 Rational Team Concert and Git]
 . https://jazz.net/library/article/1423[Understanding the Git
 Integration features in Rational Team Concert]
@@ -94,7 +94,7 @@ Jenkins instance. It is recommended that you provide this information to
 make sure that the tractability links get created correctly.
 . To enable the integration between this plugin and RTC Build
 .. Enter a build definition ID.  See the
-https://jazz.net/help-dev/clm/index.jsp?re=1&topic=/com.ibm.team.build.doc/topics/c_hudson_overview.html&scope=null[Hudson/Jenkins
+https://www.ibm.com/docs/en/engineering-lifecycle-management-suite/workflow-management/7.2.0?topic=SSUC3U_7.2/ewm/com.ibm.team.build.doc/topics/c_hudson_overview.html[Hudson/Jenkins
 build engine type] help topic to learn how to create a Jenkins build
 definition. Make sure the build definition created in RTC does not have
 any Source control option set.

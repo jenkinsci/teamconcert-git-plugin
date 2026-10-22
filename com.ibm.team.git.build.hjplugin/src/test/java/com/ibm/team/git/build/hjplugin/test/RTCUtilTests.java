@@ -1,6 +1,6 @@
 /******************************************************************************
  * Licensed Materials - Property of IBM
- * (c) Copyright IBM Corporation 2011, 2015. All Rights Reserved.
+ * (c) Copyright IBM Corporation 2011, 2026. All Rights Reserved.
  * 
  * Note to U.S. Government Users Restricted Rights:
  * Use, duplication or disclosure restricted by GSA ADP Schedule
@@ -11,8 +11,8 @@ package com.ibm.team.git.build.hjplugin.test;
 
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import com.ibm.team.git.build.hjplugin.RTCUtils;
 
@@ -21,40 +21,40 @@ public class RTCUtilTests {
 	@Test
     public void testEmptyorNullString1() throws IOException {
         String test = "";
-        Assert.assertTrue(RTCUtils.IsNullOrEmpty(test));
+        Assertions.assertTrue(RTCUtils.IsNullOrEmpty(test));
     }
 	
 	@Test
     public void testEmptyorNullString2() throws IOException {
         String test = "  ";
-        Assert.assertTrue(RTCUtils.IsNullOrEmpty(test));
+        Assertions.assertTrue(RTCUtils.IsNullOrEmpty(test));
     }
 
 	@Test
     public void testEmptyorNullString3() throws IOException {
         String test =null;
-        Assert.assertTrue(RTCUtils.IsNullOrEmpty(test));
+        Assertions.assertTrue(RTCUtils.IsNullOrEmpty(test));
     }
 
 	@Test
     public void testEmptyorNullString4() throws IOException {
         String test ="dummy";
-        Assert.assertFalse(RTCUtils.IsNullOrEmpty(test));
+        Assertions.assertFalse(RTCUtils.IsNullOrEmpty(test));
     }
 	
 	@Test
 	public void testClassExists() throws IOException {
-		Assert.assertTrue(RTCUtils.isClassExists("hudson.model.Cause$UserIdCause"));
+		Assertions.assertTrue(RTCUtils.isClassExists("hudson.model.Cause$UserIdCause"));
 	}
 	
 	@Test
 	public void testFormatURI() throws IOException {
 		String uri = "https://localHost:9443/jazz";
 		uri = RTCUtils.formatURI(uri);
-		Assert.assertTrue(uri.endsWith("/"));
+		Assertions.assertTrue(uri.endsWith("/"));
 		int length = uri.length();
 		uri = RTCUtils.formatURI(uri);
-		Assert.assertTrue(uri.endsWith("/") && (uri.length() == length));
+		Assertions.assertTrue(uri.endsWith("/") && (uri.length() == length));
 	}
 	
 	@Test
@@ -62,11 +62,11 @@ public class RTCUtilTests {
 		String uri = "https://localHost:9443/jazz";
 		String suffix = "abc/def";
 		String fulluri = RTCUtils.makeFullURL(uri, suffix);
-		Assert.assertTrue(fulluri.equals("https://localHost:9443/jazz/abc/def"));
+		Assertions.assertTrue(fulluri.equals("https://localHost:9443/jazz/abc/def"));
 		
 		uri = "https://localHost:9443/jazz/";
 		fulluri = RTCUtils.makeFullURL(uri, suffix);
-		Assert.assertTrue(fulluri.equals("https://localHost:9443/jazz/abc/def"));
+		Assertions.assertTrue(fulluri.equals("https://localHost:9443/jazz/abc/def"));
 	}
 	
 	@Test
@@ -74,72 +74,72 @@ public class RTCUtilTests {
 		String uri = "https://localHost:9443/ccm";
 		String wi = "4";
 		String wiUrl = RTCUtils.getWorkItemUrl(uri, wi);
-		Assert.assertTrue(wiUrl.equals("https://localHost:9443/ccm/resource/itemName/com.ibm.team.workitem.WorkItem/4"));
+		Assertions.assertTrue(wiUrl.equals("https://localHost:9443/ccm/resource/itemName/com.ibm.team.workitem.WorkItem/4"));
 	}
 	
 	@Test
 	public void testMatchString() throws IOException {
 		String comment = null;
-		Assert.assertFalse(RTCUtils.matchesKey(comment));
+		Assertions.assertFalse(RTCUtils.matchesKey(comment));
 		
 		comment = "";
-		Assert.assertFalse(RTCUtils.matchesKey(comment));
+		Assertions.assertFalse(RTCUtils.matchesKey(comment));
 		
 		comment = "test dummy bu";
-		Assert.assertFalse(RTCUtils.matchesKey(comment));
+		Assertions.assertFalse(RTCUtils.matchesKey(comment));
 		
 		comment = "test workitem";
-		Assert.assertTrue(RTCUtils.matchesKey(comment));
+		Assertions.assertTrue(RTCUtils.matchesKey(comment));
 		
 		comment = "test bug";
-		Assert.assertTrue(RTCUtils.matchesKey(comment));
+		Assertions.assertTrue(RTCUtils.matchesKey(comment));
 		
 		comment = "test task";
-		Assert.assertTrue(RTCUtils.matchesKey(comment));
+		Assertions.assertTrue(RTCUtils.matchesKey(comment));
 		
 		comment = "test defect";
-		Assert.assertTrue(RTCUtils.matchesKey(comment));
+		Assertions.assertTrue(RTCUtils.matchesKey(comment));
 		
 		comment = "test WORKITEM";
-		Assert.assertTrue(RTCUtils.matchesKey(comment));
+		Assertions.assertTrue(RTCUtils.matchesKey(comment));
 		
 		comment = "test BuG";
-		Assert.assertTrue(RTCUtils.matchesKey(comment));
+		Assertions.assertTrue(RTCUtils.matchesKey(comment));
 		
 		comment = "test TaSK";
-		Assert.assertTrue(RTCUtils.matchesKey(comment));
+		Assertions.assertTrue(RTCUtils.matchesKey(comment));
 		
 		comment = "test DEFect";
-		Assert.assertTrue(RTCUtils.matchesKey(comment));
+		Assertions.assertTrue(RTCUtils.matchesKey(comment));
 		
 		comment = "test abcd rtcwi";
-		Assert.assertTrue(RTCUtils.matchesKey(comment));
+		Assertions.assertTrue(RTCUtils.matchesKey(comment));
 		
 		comment = "test abcd work item";
-		Assert.assertTrue(RTCUtils.matchesKey(comment));
+		Assertions.assertTrue(RTCUtils.matchesKey(comment));
 	}
 	
 	@Test
 	public void testWIModeDefault() throws IOException {
-		Assert.assertTrue("C".equals(RTCUtils.getWiMode(null)));
-		Assert.assertTrue("C".equals(RTCUtils.getWiMode("dummy")));
+		Assertions.assertTrue("C".equals(RTCUtils.getWiMode(null)));
+		Assertions.assertTrue("C".equals(RTCUtils.getWiMode("dummy")));
 	}
 	
 	@Test
 	public void testWIModeComments() throws IOException {
-		Assert.assertTrue("C".equals(RTCUtils.getWiMode("withComment")));
-		Assert.assertTrue("C".equals(RTCUtils.getWiMode("WITHComment")));
+		Assertions.assertTrue("C".equals(RTCUtils.getWiMode("withComment")));
+		Assertions.assertTrue("C".equals(RTCUtils.getWiMode("WITHComment")));
 	}
 	
 	@Test
 	public void testWIModeLinks() throws IOException {
-		Assert.assertTrue("L".equals(RTCUtils.getWiMode("withLink")));
-		Assert.assertTrue("L".equals(RTCUtils.getWiMode("WITHLINK")));
+		Assertions.assertTrue("L".equals(RTCUtils.getWiMode("withLink")));
+		Assertions.assertTrue("L".equals(RTCUtils.getWiMode("WITHLINK")));
 	}
 	
 	@Test
 	public void testWICommentAndLink() throws IOException {
-		Assert.assertTrue("CL".equals(RTCUtils.getWiMode("withCommentAndLink")));
-		Assert.assertTrue("CL".equals(RTCUtils.getWiMode("WITHCommentANDLINK")));
+		Assertions.assertTrue("CL".equals(RTCUtils.getWiMode("withCommentAndLink")));
+		Assertions.assertTrue("CL".equals(RTCUtils.getWiMode("WITHCommentANDLINK")));
 	}
 }
