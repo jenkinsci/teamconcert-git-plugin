@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.lang.StringUtils;
 
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
@@ -151,7 +150,7 @@ public class RTCLoginInfo {
 	 */
 	public static FormValidation validateTimeout(String timeout) {
 		timeout = Util.fixEmptyAndTrim(timeout);
-		if (StringUtils.isEmpty(timeout)) {
+		if (Util.fixEmpty(timeout) == null) {
 			LOGGER.finer("timeout value missing"); //$NON-NLS-1$
 			return FormValidation.error(Messages.RTC_timeout_required());
 		}
